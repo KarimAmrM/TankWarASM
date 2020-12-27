@@ -80,38 +80,170 @@ DrawTank MACRO
 
 ENDM DrawTank
 
+Move_Tank1 MACRO
+        MOV AH,1
+        INT 16h
+        CMP AH,48H
+        JZ Move_up
+        CMP AH,50H
+        JZ Move_Down
+        CMP AH,4BH
+        JZ Move_Left
+        CMP AH,4DH
+        JZ Move_Right
+
+        JMP No_Movement
+Move_up:
+        MOV AX,Y_Posi
+        CMP AX,0
+        JZ Read_Value
+        DEC AX
+        MOV Y_Posi,AX
+        JMP Read_Value
+Move_Down:
+        MOV AX,Y_Posi
+        CMP AX,171
+        JZ Read_Value
+        INC AX
+        MOV Y_Posi,AX
+        JMP Read_Value
+Move_Left:
+        MOV AX,X_posi1
+        CMP AX,0
+        JZ Read_Value
+        DEC AX
+        MOV X_posi1,AX
+        JMP Read_Value
+Move_Right:
+        MOV AX,X_posi1
+        CMP AX,277
+        JZ Read_Value
+        INC AX
+        MOV X_posi1,AX
+        JMP Read_Value
+Read_Value:
+        RemoveValueBuffer
+        mov al,0
+	    mov CX,00
+	    mov DX,0FFFFh
+	    mov ah,6
+	    mov bh,0Eh 
+	    int 10h
+No_Movement:nop
+
+ENDM Move_Tank1
+
+RemoveValueBuffer MACRO
+    LOCAL NO_value
+        MOV AH,1
+        INT 16h
+        JZ NO_value
+        MOV AH,0
+        INT 16H
+        NO_value:nop
+        
+        
+ENDM RemoveValueBuffer
+
+DrawObstacles Macro
+
+
+
+ENDM DrawObstacles
+
+
+
+collisionDetection Macro xt,xo,Lt,Lo
+
+local secondCheck
+local False
+local true
+locat terminate
+        MOV Ax,xt
+        cmp xo,AX
+        JL secondCheck
+        ADD AX,Lt
+        cmp xo,AX
+        JG False
+        jmp true
+        
+        secondCheck:
+        mov ax,xo
+        add ax,Lo
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 .MODEL Medium
 .STACK 64
 .DATA
-Tank1 LAbel Byte
-X_Posi1 dw 100
-Y_posi  dw 100
-x dw ?
-y dw ?
+	        Tank1 Label Byte
+	X_Posi1 dw    100
+	Y_posi  dw    100
+	x       dw    ?
+	y       dw    ?
 Helath  db 3
+Obstacles Label Word
+
 .code
 MAIN proc FAR
-mov ax,@data
-mov Ds,ax
-MOV AH,0
-MOV AL,13H
-int 10H
 
-mov al,0
-mov CX,00
-mov DX,0FFFFh
-mov ah,6
-mov bh,0Eh
-int 10h
-labeltest:
-DrawTank
-DrawRectangel 00,00,5,7,02
-jmp labeltest
-mov AH,0Ch
-int 21h
+	          mov           ax,@data
+	          mov           Ds,ax
+	          MOV           AH,0
+	          MOV           AL,13H
+	          int           10H
+
+	          mov           al,0
+	          mov           CX,00
+	          mov           DX,0FFFFh
+	          mov           ah,6
+	          mov           bh,0Eh
+	          int           10h
+	labeltest:
+
+	          DrawTank
+	          Move_Tank1
+	          DrawRectangel 00,00,5,7,02
+              RemoveValueBuffer
+	          jmp           labeltest
+	          mov           AH,0Ch
+	          int           21h
 
 MAIN ENDP
 END MAIN
+
 
