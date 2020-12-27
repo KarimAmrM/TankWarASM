@@ -30,79 +30,64 @@ CMP CX,BX
 JNZ Draw 
 ENDM DrawHorizontalLine
 
+DrawSquare MACRO X,Y,L,Colour
+    DrawVerticalLine X,Y,L,Colour ;draw first vertical line
+    MOV CX,X ;mirrors the vertical line by adding the tank's length
+    ADD CX,L
+    DrawVerticalLine CX,Y,L,Colour
+    DrawHorizontalLine X,Y,L,Colour ; draw first horizontal line
+    MOV DX,Y    ;mirrors the horizontal line by adding the tank's length
+    ADD DX,L
+    DrawHorizontalLine X,DX,L+1,Colour
+ENDM DrawSquare
+
+DrawRectangel MACRO X,Y,W,L,Colour
+    DrawVerticalLine X,Y,W,Colour ;draw first vertical line
+    MOV CX,X ;mirrors the vertical line by adding the tank's length
+    ADD CX,L
+    DrawVerticalLine CX,Y,W,Colour
+    DrawHorizontalLine X,Y,L,Colour ; draw first horizontal line
+    MOV DX,Y    ;mirrors the horizontal line by adding the tank's length
+    ADD DX,W
+    DrawHorizontalLine X,DX,L+1,Colour
+ENDM DrawRectangel
+
 DrawTank MACRO 
     ;Cx Holds the x values for drawing
     ;Dx Holds the y values for drawing
-
-
-    DrawVerticalLine X_Posi1,Y_posi,28d,02h ;draw first vertical line
-    MOV CX,X_Posi1 ;mirrors the vertical line by adding the tank's length
-    ADD CX,28d
-    DrawVerticalLine CX,Y_posi,28d,02h
-    DrawHorizontalLine X_Posi1,Y_posi,28d,02h ; draw first horizontal line
-    MOV DX,Y_Posi    ;mirrors the horizontal line by adding the tank's length
-    ADD DX,28d
-    DrawHorizontalLine X_Posi1,DX,29D,02h
-
+    DrawSquare X_Posi1,Y_Posi,28D,02h
     MOV AX,28d
     MOV BX,04D
     DIV BL
     MOV AH,0
-    MOV DX,Y_Posi
-    ADD DX,AX
-    MOV CX,X_posi1
-    ADD CX,AX
-    mov x,cx
-    mov y,dx
-    DrawVerticalLine x,y,14D,02h 
-
+    MOV DI,Y_Posi
+    ADD DI,AX
+    MOV SI,X_posi1
+    ADD SI,AX
+    DrawSquare SI,DI,14D,02H
+    
     MOV AX,28d
-    MOV BX,04D
+    MOV BX,02D
     DIV BL
     MOV AH,0
-    MOV DX,Y_Posi
-    ADD DX,AX
-    MOV CX,X_posi1
-    ADD CX,AX
-    mov x,cx
-    mov y,dx
-    DrawHorizontalLine x,y,15D,02h 
+    MOV DI,Y_Posi
+    ADD DI,AX
+    MOV SI,X_posi1
+    ADD SI,AX
+    DEC DI
+    DrawRectangel SI,DI,3,28D,07H
 
-    MOV AX,28d
-    MOV BX,04D
-    DIV BL
-    MOV AH,0
-    MOV DX,Y_Posi
-    ADD DX,AX
-    MOV CX,X_posi1
-    ADD CX,AX
-    ADD DX,14D
-    mov x,cx
-    mov y,dx
-    DrawHorizontalLine x,y,14D,02h 
-
-    MOV AX,28d
-    MOV BX,04D
-    DIV BL
-    MOV AH,0
-    MOV DX,Y_Posi
-    ADD DX,AX
-    MOV CX,X_posi1
-    ADD CX,AX
-    ADD CX,14D
-    inc DX
-    mov x,cx
-    mov y,dx
-    DrawVerticalLine x,y,14D,02h 
 
 ENDM DrawTank
+
+
 
 .MODEL Medium
 .STACK 64
 .DATA
 Tank1 LAbel Byte
-X_Posi1 dw 12
-Y_posi  dw 12
+X_Posi1 dw 100
+Y_posi  dw 100
 x dw ?
 y dw ?
 Helath  db 3
@@ -120,8 +105,10 @@ mov DX,0FFFFh
 mov ah,6
 mov bh,0Eh
 int 10h
+labeltest:
 DrawTank
-
+DrawRectangel 00,00,5,7,02
+jmp labeltest
 mov AH,0Ch
 int 21h
 
