@@ -49,7 +49,10 @@ DrawRectangel MACRO X,Y,W,L,Colour
     DrawHorizontalLine X,Y,L,Colour ; draw first horizontal line
     MOV DX,Y    ;mirrors the horizontal line by adding the tank's length
     ADD DX,W
-    DrawHorizontalLine X,DX,L+1,Colour
+    MOV AX,L
+    INC AX
+    MOV LengthRec,AX
+    DrawHorizontalLine X,DX,LengthRec,Colour
 ENDM DrawRectangel
 
 DrawTank MACRO 
@@ -146,66 +149,56 @@ RemoveValueBuffer MACRO
 ENDM RemoveValueBuffer
 
 DrawObstacles Macro
-
-
+LOCAL Draw
+LOCAL Increment
+        MOV SI, OFFSET Obstacles
+        MOV DI,[SI]
+        ADD SI,2
+Draw :
+        MOV AX,[SI]+8
+        CMP AX,0
+        JZ Increment
+        DrawRectangel [SI],[SI]+2,[SI]+4,[SI]+6,01
+Increment:
+        ADD SI , 10D
+        DEC DI
+        JNZ Draw 
 
 ENDM DrawObstacles
 
 
-
 collisionDetection Macro xt,xo,Lt,Lo
 
-local secondCheck
-local False
-local true
-locat terminate
-        MOV Ax,xt
-        cmp xo,AX
-        JL secondCheck
-        ADD AX,Lt
-        cmp xo,AX
-        JG False
-        jmp true
+        LOCAL secondCheck
+        LOCAL False
+        LOCAL true
+        LOCAL terminate
         
-        secondCheck:
-        mov ax,xo
-        add ax,Lo
+                MOV Ax,xt               ;we check to see if the object at xo,yo with length Lo collided with a tank, to get a collision the object has to be in the x range of the tank and its y range
+                cmp xo,AX               
+                JL secondCheck          ;if(xo<xt) go to second condition  
+                ADD AX,Lt                     
+                cmp xo,AX               ;if(xo>x+lt) then there's no collision and we go to false label to set collision to 0                   
+                JG False                
+                JMP True
+                
+                secondCheck:            ;the other check 
+                mov ax,xo               
+                add ax,Lo
+                cmp xt,Ax               ;if(xt>xo+Lo) then there's no collision and we go to false label to set collision to 0
+                JG False
+                JMP True
 
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                False:
+                mov al,0
+                JMP terminate
+                
+                True:
+                mov al,1
+                jmp terminate
+                
+                terminate: nop
+ENDM collisionDetection
 
 .MODEL Medium
 .STACK 64
@@ -216,8 +209,8 @@ locat terminate
 	x       dw    ?
 	y       dw    ?
 Helath  db 3
-Obstacles Label Word
-
+Obstacles DW 1,50,50,10,5,1 ;nObstacles, x , y , width, length of obstacles , DrawStatus 1: to be drawn 0: Destroyed
+LengthRec DW ?
 .code
 MAIN proc FAR
 
@@ -233,15 +226,17 @@ MAIN proc FAR
 	          mov           ah,6
 	          mov           bh,0Eh
 	          int           10h
-	labeltest:
 
-	          DrawTank
-	          Move_Tank1
-	          DrawRectangel 00,00,5,7,02
-              RemoveValueBuffer
+	labeltest:
+                
+                DrawObstacles        
+	        DrawTank
+	        Move_Tank1
+                RemoveValueBuffer
 	          jmp           labeltest
 	          mov           AH,0Ch
 	          int           21h
+                  
 
 MAIN ENDP
 END MAIN
