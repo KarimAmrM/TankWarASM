@@ -167,33 +167,32 @@ Increment:
 ENDM DrawObstacles
 
 
-collisionDetection Macro xt,xo,Lt,Lo
-
+collisionDetection Macro xt,xo,Lt1,Lo
         LOCAL secondCheck
         LOCAL False
-        LOCAL true
+        LOCAL True
         LOCAL terminate
         
                 MOV Ax,xt               ;we check to see if the object at xo,yo with length Lo collided with a tank, to get a collision the object has to be in the x range of the tank and its y range
-                cmp xo,AX               
-                JL secondCheck          ;if(xo<xt) go to second condition  
-                ADD AX,Lt                     
-                cmp xo,AX               ;if(xo>x+lt) then there's no collision and we go to false label to set collision to 0                   
-                JG False                
+                cmp AX,xo               
+                JG secondCheck          ;if(xo<xt) go to second condition  
+                ADD AX,Lt1                     
+                cmp AX,xo               ;if(xo>x+lt) then there's no collision and we go to false label to set collision to 0                   
+                JL False                
                 JMP True
                 
-                secondCheck:            ;the other check 
+        secondCheck:            ;the other check 
                 mov ax,xo               
                 add ax,Lo
-                cmp xt,Ax               ;if(xt>xo+Lo) then there's no collision and we go to false label to set collision to 0
-                JG False
+                cmp Ax,xt               ;if(xt>xo+Lo) then there's no collision and we go to false label to set collision to 0
+                JL False
                 JMP True
 
-                False:
+        False:
                 mov al,0
                 JMP terminate
                 
-                True:
+        True:
                 mov al,1
                 jmp terminate
                 
@@ -208,8 +207,11 @@ ENDM collisionDetection
 	Y_posi  dw    100
 	x       dw    ?
 	y       dw    ?
-Helath  db 3
-Obstacles DW 1,50,50,10,5,1 ;nObstacles, x , y , width, length of obstacles , DrawStatus 1: to be drawn 0: Destroyed
+        yObs    dw    ?
+        xObs    dw    ?
+        lobs    dw    ?
+        wobs     dw    ?
+Obstacles DW 2,50,50,10,5,1,20,50,10,5,1 ;nObstacles, x , y , width, length of obstacles , DrawStatus 1: to be drawn 0: Destroyed
 LengthRec DW ?
 .code
 MAIN proc FAR
@@ -227,12 +229,38 @@ MAIN proc FAR
 	          mov           bh,0Eh
 	          int           10h
 
+                mov si,OFFSET Obstacles
+                add si,2
+                mov AX,[si]
+                mov xObs,AX
+                mov AX,[si]+2
+                mov yObs,AX
+                mov AX,[si]+4
+                mov wObs,AX
+                mov AX,[si]+6
+                mov lObs,AX
+                
+               
 	labeltest:
                 
                 DrawObstacles        
 	        DrawTank
 	        Move_Tank1
-                RemoveValueBuffer
+                collisionDetection X_Posi1,xObs,28D,lobs
+                MOV bl,al
+                collisionDetection Y_posi,yObs,28D,wobs
+                and al,bl 
+                cmp al,1
+                jz overwrite
+                       
+                jmp labeltest      
+               overwrite: 
+               mov si,OFFSET Obstacles
+                add si,2 
+
+                mov ax,0
+                mov [si]+8,ax
+                RemoveValueBuffer 
 	          jmp           labeltest
 	          mov           AH,0Ch
 	          int           21h
