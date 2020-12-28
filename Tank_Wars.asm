@@ -121,14 +121,14 @@ ENDM collisionDetection
         Framestart DD ?
         FrameEnd DD ?
         FrameTime DD ?
-        Bullets1 dw 20,60 dup(?)
+        Bullets1 dw 20,50,50,1,57 dup(0)
 Obstacles DW 2,50,50,10,5,1,20,50,10,5,1 ;nObstacles, x , y , width, length of obstacles , DrawStatus 1: to be drawn 0: Destroyed
 LengthRec DW ?
 .code
 delay       proc 
-            mov     cx, 001H
+            mov     cx, 000H
          delRep: push    cx
-            mov     cx, 04C08H
+            mov     cx, 0H
          delDec: dec     cx
             jnz     delDec
             pop     cx
@@ -298,12 +298,50 @@ DrawObstacles endp
 DrawBullets1 proc
 MOV SI,offset Bullets1
 MOV DI,[SI]
-INC SI
-Drawbullet:
+add SI,02h
+        Drawbullet: 
+                    MOV AX,[SI]+4
+                    CMP AX,0
+                    JZ IncrementBullets
+                    MOV CX,[SI]  
+                    MOV DX,[SI]+2
+                    DrawHorizontalLine Cx,DX,4,01
+                    MOV CX,[SI]
+                    inc dx
+                    DrawHorizontalLine Cx,DX,4,01
+        IncrementBullets:
+                          ADD SI,6
+                          dec DI
+                          jnz Drawbullet             
+               ret
 
-              
+DrawBullets1 endp;
 
-DrawBullets1 endp
+MoveBullets1 proc
+MOV SI,offset Bullets1
+MOV DI,[SI]
+add si,02h
+        Movebullet: 
+                    MOV AX,[SI]+4
+                    CMP AX,0
+                    JZ IncrementMove
+                    MOV CX,[SI]    
+                    INC CX
+                    CMP CX,316
+                    jz setzero
+                    MOV [SI],CX
+                    jmp IncrementMove
+        setzero: 
+                          MOV [SI]+4,0h
+        IncrementMove:
+                          ADD SI,6
+                          dec DI
+                          jnz Movebullet             
+               ret
+
+MoveBullets1 ENDP
+
+
 
 MAIN proc FAR
 
@@ -323,21 +361,27 @@ MAIN proc FAR
 
                       
 	labeltest:
+                                mov al,0
+                mov CX,00
+                mov DX,0FFFFh
+                mov ah,6
+                mov bh,0Eh 
+                int 10h
                 ;Call interput 1ah ah =0    starttime 
                 Call Move_Tank1
+                Call MoveBullets1
                 Call DrawObstacles
-                ;call DrawBullets1
+                call DrawBullets1
                 Call DrawTank1
+                call delay
 
-                ;call interput 1ah
 
-                ;process input : update tank coordinates , health , score , bullets
-                ;update : change data , collision
-                ; render : draw 
 
-                        
                 jmp labeltest  
 MAIN ENDP
 END MAIN
+
+
+
 
 
