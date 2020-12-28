@@ -117,14 +117,17 @@ ENDM collisionDetection
         yObs    dw    ?
         xObs    dw    ?
         lobs    dw    ?
-        wobs     dw    ?
+        wobs    dw    ?
+        Framestart DD ?
+        FrameEnd DD ?
+        FrameTime DD ?
 Obstacles DW 2,50,50,10,5,1,20,50,10,5,1 ;nObstacles, x , y , width, length of obstacles , DrawStatus 1: to be drawn 0: Destroyed
 LengthRec DW ?
 .code
 delay       proc 
-            mov     cx, 002H
+            mov     cx, 001H
          delRep: push    cx
-            mov     cx, 0D090H
+            mov     cx, 04C08H
          delDec: dec     cx
             jnz     delDec
             pop     cx
@@ -308,18 +311,49 @@ MAIN proc FAR
 
                       
 	labeltest:
+                ;Call interput 1ah ah =0    starttime 
+                mov ah,0
+                int 1ah
+                mov si,OFFSET Framestart
+                mov [si],dx
+                mov [si]+2,cx
+
                 Call Move_Tank1
                 Call DrawObstacles
                 Call DrawTank1
+
+                mov ah,0
+                int 1ah
+                mov si,OFFSET FrameEnd
+                mov [si],dx
+                mov [si]+2,cx
 	        
-                
+                mov ax,word ptr FrameEnd
+                mov bx,word ptr Framestart
+                sub ax,bx
+
+                mov si,OFFSET FrameTime
+                mov [si],ax
+
+                mov ax,word ptr FrameEnd+2
+                mov bx,word ptr Framestart+2
+                sbb ax,bx
+                mov [si]+2,ax
+              
+               
+                mov cx,0
+                mov dx,81f4h
+                mov ah,86h
+                int 15h
+                ;call interput 1ah
 
                 ;process input : update tank coordinates , health , score , bullets
                 ;update : change data , collision
                 ; render : draw 
 
                         
-                jmp labeltest      
+                jmp labeltest  
+                
 
 	          mov           AH,0Ch
 	          int           21h
