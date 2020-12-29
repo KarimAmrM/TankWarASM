@@ -67,24 +67,24 @@ RemoveValueBuffer MACRO
         
 ENDM RemoveValueBuffer
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-collisionDetection Macro xt,xo,Lt1,Lo
+collisionDetection Macro x1,x2,L1,L2
         LOCAL secondCheck
         LOCAL False
         LOCAL True
         LOCAL terminate
         
-                MOV Ax,xt               ;we check to see if the object at xo,yo with length Lo collided with a tank, to get a collision the object has to be in the x range of the tank and its y range
-                cmp AX,xo               
+                MOV Ax,x1               ;we check to see if the object at xo,yo with length Lo collided with a tank, to get a collision the object has to be in the x range of the tank and its y range
+                cmp AX,x2               
                 JG secondCheck          ;if(xo<xt) go to second condition  
-                ADD AX,Lt1                     
-                cmp AX,xo               ;if(xo>x+lt) then there's no collision and we go to false label to set collision to 0                   
+                ADD AX,L1                     
+                cmp AX,x2               ;if(xo>x+lt) then there's no collision and we go to false label to set collision to 0                   
                 JL False                
                 JMP True
                 
         secondCheck:            ;the other check 
-                mov ax,xo               
-                add ax,Lo
-                cmp Ax,xt               ;if(xt>xo+Lo) then there's no collision and we go to false label to set collision to 0
+                mov ax,x2               
+                add ax,L2
+                cmp Ax,x1               ;if(xt>xo+Lo) then there's no collision and we go to false label to set collision to 0
                 JL False
                 JMP True
 
@@ -105,7 +105,7 @@ ENDM collisionDetection
 .DATA
 	        Tank1 Label Byte
 	X_Posi1 dw    150
-	Y_posi  dw    50
+	Y_posi  dw    60
         Tank_length dw    28d
 	x       dw    ?
 	y       dw    ?
@@ -113,10 +113,13 @@ ENDM collisionDetection
         xObs    dw    ?
         lobs    dw    ?
         wobs    dw    ?
-        Bullets1 dw  20,50,50,1,57 dup(0)  
-        Bullets2 dw  20,50,50,1,57 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4]
-        Obstacles DW 3,50,50,10,5,1,20,50,10,5,1,250,60,20,6,1 ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8]1: to be drawn 0: Destroyed
-        LengthRec DW ?
+        Bullets1 dw  20,0,0,1,57 dup(0)  
+        Bullets2 dw  20,80,50,1,57 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4]
+        Obstacles DW 4,50,50,10,5,1,20,50,10,5,1,250,0,20,6,1,200,50,10,20,1 ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8]1: to be drawn 0: Destroyed
+        LengthRec DW  ?
+        nBullets1 dw  ?
+        nBullets2 dw  ?
+        nObstacles dw ?
 .code
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 delay       proc 
@@ -198,7 +201,6 @@ Move_Tank1 proc
         No_Movement:    ret
 Move_Tank1 ENDp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 DrawTank1 proc 
                        mov                si,2
 	               MOv                Dx,Y_posi
@@ -291,7 +293,6 @@ DrawTank1 proc
         ret
 DrawTank1 endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 DrawObstacles proc
 
                 MOV SI, OFFSET Obstacles
@@ -309,7 +310,8 @@ DrawObstacles proc
                 ret
 DrawObstacles endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-DrawBullets1 proc
+DrawBullets proc
+;Bullets from first tank
 MOV SI,offset Bullets1
 MOV DI,[SI]
 add SI,02h
@@ -330,17 +332,41 @@ add SI,02h
         IncrementBullets:
                           ADD SI,6
                           dec DI
-                          jnz Drawbullet             
+                          jnz Drawbullet   
+                          
+; Bullets from second tank
+MOV SI,offset Bullets2
+MOV DI,[SI]
+add SI,02h
+        Drawbullet2: 
+                    MOV AX,[SI]+4
+                    CMP AX,0
+                    JZ IncrementBullets2
+                    MOV CX,[SI]  
+                    sub cx,4
+                    MOV DX,[SI]+2
+                    DrawHorizontalLine Cx,DX,4,0Eh
+                    DrawHorizontalLine Cx,DX,4,01
+                    MOV CX,[SI]
+                    sub cx,4
+                    inc dx
+                    DrawHorizontalLine Cx,DX,4,0Eh
+                    DrawHorizontalLine Cx,DX,4,01
+        IncrementBullets2:
+                          ADD SI,6
+                          dec DI
+                          jnz Drawbullet2              
                ret
 
-DrawBullets1 endp;
+DrawBullets endp;
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-MoveBullets1 proc
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------
+MoveBullets proc
 MOV SI,offset Bullets1
 MOV DI,[SI]
 add si,02h
-        Movebullet: 
+        Movebullets1: 
                     MOV AX,[SI]+4
                     CMP AX,0
                     JZ IncrementMove
@@ -359,10 +385,36 @@ add si,02h
         IncrementMove:
                     ADD SI,6
                     dec DI
-                    jnz Movebullet             
+                    jnz Movebullets1
+
+
+MOV SI,offset Bullets2
+MOV DI,[SI]
+add si,02h
+        Movebullets2: 
+                    MOV AX,[SI]+4
+                    CMP AX,0
+                    JZ IncrementMove2
+                    MOV CX,[SI]    
+                    INC CX
+                    CMP CX,316
+                    jz setzero2
+                    MOV [SI],CX
+                    jmp IncrementMove2
+        setzero2:   
+                    MOV [SI]+4,0h
+                    DrawHorizontalLine [si],[SI]+2,4,0Eh
+                    mov dx,[si]+2
+                    inc dx
+                    DrawHorizontalLine [SI],dx,4,0Eh
+        IncrementMove2:
+                    ADD SI,6
+                    dec DI
+                    jnz Movebullets2            
                ret
 
-MoveBullets1 ENDP
+MoveBullets ENDP
+
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Collision proc 
 MOV  SI, OFFSET Obstacles
@@ -371,6 +423,8 @@ ADD SI,2
 TanksObst:      
                  cmp [si]+8,0
                  jz IncrementObstacles1
+              
+
                  collisionDetection X_Posi1,[SI],Tank_length,[SI]+6  ;tank and obs
                  mov bl,al
                  collisionDetection Y_Posi,[SI]+2,Tank_length,[SI]+4  ;tank and obs
@@ -382,17 +436,20 @@ IncrementObstacles1:add si,10D
                  dec DI
                  jnz TanksObst
 
-                 Mov si,offset Bullets1
+ ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------                
+
+                 Mov si,offset Bullets2
                  Mov di,[si]
+                 
                  add si,2
 Bullets2Tank1:
                  cmp [si]+4,0
-                 jz IncBullets2Tank1
-                 collisionDetection X_Posi1,[SI],Tank_length,2  ;tank and obs
+                 jz IncBullets2
+                 collisionDetection X_Posi1,[SI],Tank_length,2  ;bullets from second tank and tank1
                  mov bl,al
-                 collisionDetection Y_Posi,[SI]+2,Tank_length,4  ;tank and obs
+                 collisionDetection Y_Posi,[SI]+2,Tank_length,4  
                  and al,bl
-                 jz IncBullets2Tank1
+                 jz IncBullets2
                  mov [SI]+4,0
                  mov cx,[si]
                  dec cx
@@ -401,22 +458,120 @@ Bullets2Tank1:
                  mov dx,[si]+2
                  inc dx
                  DrawHorizontalLine [SI],dx,4,0Eh
-IncBullets2Tank1:
+IncBullets2:
                  add si,6
                  dec DI
                  jnz Bullets2Tank1
                  
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+
+                mov si,offset Bullets1
+                mov di,[si]
+                mov nBullets1,di
+                add si,2
+                push si
+
+                mov di,offset Obstacles
+                mov si,[di]
+                mov nObstacles,si
+                add di,2
+                pop si
+
+ Bullets1Obst:
+               cmp[si+4],0
+               jz nextBullet
+               collisionDetection [si],[di],4,[di+6]
+               mov bl,al
+               collisionDetection [si+2],[di+2],2,[di+4]
+               and al,bl
+               jz nextObstacle ;jump if no collision
+               mov [si+4],0
+               mov [di+8],0
+               mov cx,[si]
+               dec cx
+               mov [si],cx
+               DrawHorizontalLine [si],[SI]+2,4,0Eh
+               mov dx,[si]+2
+               inc dx
+               DrawHorizontalLine [SI],dx,4,0Eh
+
+               DrawRectangel [di],[di]+2,[di]+4,[di]+6,0Eh
+               jmp nextBullet
+        nextBullet:
+                add si,6
+                mov cx,nBullets1
+                dec Cx
+                mov nBullets1,cx
+                mov di,offset Obstacles
+                jnz Bullets1Obst
+                jmp CollisionOf2ndBullets
+                
+        nextObstacle:
+                add di,10
+                mov cx,nObstacles
+                dec Cx
+                mov nObstacles,cx
+                jnz Bullets1Obst
+                jmp nextBullet
+
+        
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+         CollisionOf2ndBullets:
+                mov si,offset Bullets2
+                mov di,[si]
+                mov nBullets2,di
+                add si,2
+                push si
+
+                mov di,offset Obstacles
+                mov si,[di]
+                mov nObstacles,si
+                add di,2
+                pop si
+
+ Bullets2Obst:
+               cmp[si+4],0
+               jz nextBullet2
+               collisionDetection [si],[di],4,[di+6]
+               mov bl,al
+               collisionDetection [si+2],[di+2],2,[di+4]
+               and al,bl
+               jz nextObstacle2 ;jump if no collision
+               mov [si+4],0
+               mov [di+8],0
+               mov cx,[si]
+               dec cx
+               mov [si],cx
+               DrawHorizontalLine [si],[SI]+2,4,0Eh
+               mov dx,[si]+2
+               inc dx
+               DrawHorizontalLine [SI],dx,4,0Eh
+
+               DrawRectangel [di],[di]+2,[di]+4,[di]+6,0Eh
+               jmp nextBullet2
+        nextBullet2:
+                add si,6
+                mov cx,nBullets2
+                dec Cx
+                mov nBullets2,cx
+                mov di,offset Obstacles
+                jnz Bullets2Obst
+                jmp endl
+                
+        nextObstacle2:
+                add di,10
+                mov cx,nObstacles
+                dec Cx
+                mov nObstacles,cx
+                jnz Bullets2Obst
+                jmp nextBullet2
 
 
 
 
 
 
-
-
-
-
-
+endl:
 ret
 Collision ENDP
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -440,12 +595,17 @@ MAIN proc FAR
                       
 	labeltest:
                 
-                call delay
+              
+                 mov cx,00h
+                mov dx,2120h
+                mov ah,86h
+                int 15h
                 Call Move_Tank1
-                Call MoveBullets1
+                Call MoveBullets
                 call Collision
                 Call DrawObstacles
-                call DrawBullets1
+                call DrawBullets
+              
                 Call DrawTank1
                 
                
