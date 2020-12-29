@@ -104,8 +104,8 @@ ENDM collisionDetection
 .STACK 64
 .DATA
 	        Tank1 Label Byte
-	X_Posi1 dw    100
-	Y_posi  dw    100
+	X_Posi1 dw    150
+	Y_posi  dw    50
         Tank_length dw    28d
 	x       dw    ?
 	y       dw    ?
@@ -113,7 +113,8 @@ ENDM collisionDetection
         xObs    dw    ?
         lobs    dw    ?
         wobs    dw    ?
-        Bullets1 dw  20,50,50,1,57 dup(0)        
+        Bullets1 dw  20,50,50,1,57 dup(0)  
+        Bullets2 dw  20,50,50,1,57 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4]
         Obstacles DW 3,50,50,10,5,1,20,50,10,5,1,250,60,20,6,1 ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8]1: to be drawn 0: Destroyed
         LengthRec DW ?
 .code
@@ -349,8 +350,12 @@ add si,02h
                     jz setzero
                     MOV [SI],CX
                     jmp IncrementMove
-        setzero: 
+        setzero:   
                     MOV [SI]+4,0h
+                    DrawHorizontalLine [si],[SI]+2,4,0Eh
+                    mov dx,[si]+2
+                    inc dx
+                    DrawHorizontalLine [SI],dx,4,0Eh
         IncrementMove:
                     ADD SI,6
                     dec DI
@@ -377,8 +382,30 @@ IncrementObstacles1:add si,10D
                  dec DI
                  jnz TanksObst
 
-
-
+                 Mov si,offset Bullets1
+                 Mov di,[si]
+                 add si,2
+Bullets2Tank1:
+                 cmp [si]+4,0
+                 jz IncBullets2Tank1
+                 collisionDetection X_Posi1,[SI],Tank_length,2  ;tank and obs
+                 mov bl,al
+                 collisionDetection Y_Posi,[SI]+2,Tank_length,4  ;tank and obs
+                 and al,bl
+                 jz IncBullets2Tank1
+                 mov [SI]+4,0
+                 mov cx,[si]
+                 dec cx
+                 mov [si],cx
+                 DrawHorizontalLine [si],[SI]+2,4,0Eh
+                 mov dx,[si]+2
+                 inc dx
+                 DrawHorizontalLine [SI],dx,4,0Eh
+IncBullets2Tank1:
+                 add si,6
+                 dec DI
+                 jnz Bullets2Tank1
+                 
 
 
 
@@ -412,8 +439,8 @@ MAIN proc FAR
 
                       
 	labeltest:
-      
                 
+                call delay
                 Call Move_Tank1
                 Call MoveBullets1
                 call Collision
