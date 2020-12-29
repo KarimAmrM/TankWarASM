@@ -13,9 +13,7 @@ INC DX
 CMP DX,BX
 JNZ Draw
 ENDM DrawVerticalLine
-
-
-
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawHorizontalLine MACRO X,Y,L,Colour ;Darws a single horizontal line from x,y to x+l,z
 LOCAL Draw
 MOV CX,X
@@ -31,7 +29,7 @@ INC CX
 CMP CX,BX
 JNZ Draw 
 ENDM DrawHorizontalLine
-
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawSquare MACRO X,Y,L,Colour
     DrawVerticalLine X,Y,L,Colour ;draw first vertical line
     MOV CX,X ;mirrors the vertical line by adding the tank's length
@@ -42,7 +40,7 @@ DrawSquare MACRO X,Y,L,Colour
     ADD DX,L
     DrawHorizontalLine X,DX,L+1,Colour
 ENDM DrawSquare
-
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawRectangel MACRO X,Y,W,L,Colour
     DrawVerticalLine X,Y,W,Colour ;draw first vertical line
     MOV CX,X ;mirrors the vertical line by adding the tank's length
@@ -56,11 +54,7 @@ DrawRectangel MACRO X,Y,W,L,Colour
     MOV LengthRec,AX
     DrawHorizontalLine X,DX,LengthRec,Colour
 ENDM DrawRectangel
-
-
-
-
-
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RemoveValueBuffer MACRO
     LOCAL NO_value
         MOV AH,1
@@ -72,7 +66,7 @@ RemoveValueBuffer MACRO
         
         
 ENDM RemoveValueBuffer
-
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 collisionDetection Macro xt,xo,Lt1,Lo
         LOCAL secondCheck
         LOCAL False
@@ -104,8 +98,9 @@ collisionDetection Macro xt,xo,Lt1,Lo
                 
                 terminate: nop
 ENDM collisionDetection
-
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 .MODEL Medium
+.386
 .STACK 64
 .DATA
 	        Tank1 Label Byte
@@ -118,15 +113,13 @@ ENDM collisionDetection
         xObs    dw    ?
         lobs    dw    ?
         wobs    dw    ?
-        Framestart DD ?
-        FrameEnd DD ?
-        FrameTime DD ?
-        Bullets1 dw 20,50,50,1,57 dup(0)
-Obstacles DW 2,50,50,10,5,1,20,50,10,5,1 ;nObstacles, x , y , width, length of obstacles , DrawStatus 1: to be drawn 0: Destroyed
-LengthRec DW ?
+        Bullets1 dw  20,50,50,1,57 dup(0)        
+        Obstacles DW 3,50,50,10,5,1,20,50,10,5,1,250,60,20,6,1 ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8]1: to be drawn 0: Destroyed
+        LengthRec DW ?
 .code
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 delay       proc 
-            mov     cx, 000H
+            mov     cx, 001H
          delRep: push    cx
             mov     cx, 0H
          delDec: dec     cx
@@ -136,7 +129,7 @@ delay       proc
             jnz     delRep
             ret
 delay       endp
-
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Move_Tank1 proc
                 MOV AH,1
                 INT 16h
@@ -154,6 +147,11 @@ Move_Tank1 proc
                 MOV AX,Y_Posi
                 CMP AX,0
                 JZ Read_Value
+                MOV DX,Y_Posi
+                ADD DX,28d
+                push ax
+                DrawHorizontalLine X_Posi1,DX,28D,0Eh
+                pop ax
                 DEC AX
                 MOV Y_Posi,AX
                 JMP Read_Value
@@ -161,6 +159,10 @@ Move_Tank1 proc
                 MOV AX,Y_Posi
                 CMP AX,171
                 JZ Read_Value
+                MOV DX,Y_Posi
+                push ax
+                DrawHorizontalLine X_Posi1,DX,28D,0Eh
+                pop ax
                 INC AX
                 MOV Y_Posi,AX
                 JMP Read_Value
@@ -168,6 +170,13 @@ Move_Tank1 proc
                 MOV AX,X_posi1
                 CMP AX,0
                 JZ Read_Value
+                MOV CX,X_Posi1
+                add cx,28D
+                push ax
+                DrawVerticalLine Cx,Y_Posi,28,0Eh
+                 dec cx
+                DrawVerticalLine Cx,Y_Posi,28,0Eh
+                pop ax
                 DEC AX
                 MOV X_posi1,AX
                 JMP Read_Value
@@ -175,40 +184,42 @@ Move_Tank1 proc
                 MOV AX,X_posi1
                 CMP AX,277
                 JZ Read_Value
+                MOV CX,X_Posi1
+                push ax
+                DrawVerticalLine Cx,Y_Posi,28,0Eh
+               
+                pop ax
                 INC AX
                 MOV X_posi1,AX
                 JMP Read_Value
         Read_Value:
                 RemoveValueBuffer
-                mov al,0
-                mov CX,00
-                mov DX,0FFFFh
-                mov ah,6
-                mov bh,0Eh 
-                int 10h
         No_Movement:    ret
 Move_Tank1 ENDp
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 DrawTank1 proc 
                        mov                si,2
 	               MOv                Dx,Y_posi
 	firstloop:     
 	               MOV                CX,X_Posi1
-	               inc                CX
+	               DrawHorizontalLine CX,DX,1,0Eh
 	               DrawHorizontalLine CX,DX,26D,00
+                       DrawHorizontalLine CX,DX,1,0Eh
 	               MOV                CX,X_Posi1
-	               inc                CX
 	               add                dx ,Tank_length
+                       DrawHorizontalLine CX,DX,1,0Eh
 	               DrawHorizontalLine CX,DX,26D,00
+                       DrawHorizontalLine CX,DX,1,0Eh
 	               sub                dx ,Tank_length
 	               mov                ax,Tank_length
 	               sub                ax,2
 	               mov                Tank_length,ax
 	               inc                dx
 	               dec                SI
-	               jnz                firstloop
-
-	               dec                dx
+	               jz                beginsecondloop
+                       jmp                firstloop
+	beginsecondloop:dec                dx
 
 	               mov                si,4
 	secondloop:    
@@ -249,16 +260,18 @@ DrawTank1 proc
 	fourthloop:    
 	               mov                cx,X_Posi1
 	               inc                dx
-	               inc                cx
+	               DrawHorizontalLine CX,DX,1,0Eh
 	               DrawHorizontalLine cx,dx,5,00
 	               DrawHorizontalLine cx,dx,15,01
 	               DrawHorizontalLine cx,dx,3,00
+                       DrawHorizontalLine CX,DX,4,0Eh
 	               mov                cx,X_Posi1
 	               add                dx,Tank_length
-	               inc                cx
+                       DrawHorizontalLine CX,DX,1,0Eh
 	               DrawHorizontalLine cx,dx,5,00
 	               DrawHorizontalLine cx,dx,15,01
 	               DrawHorizontalLine cx,dx,3,00
+                       DrawHorizontalLine CX,DX,4,0Eh
 	               sub                dx,Tank_length
 	               mov                ax,Tank_length
 	               sub                ax,2
@@ -270,13 +283,13 @@ DrawTank1 proc
 	beginfifthloop:mov                si , 5
 	fifthloop:     mov                cx,X_Posi1
 	               inc                dx
-	               add                cx,2
 	               DrawHorizontalLine cx,dx,28,00
 	               dec                SI
 	               jnz                fifthloop
         mov Tank_length,28d
         ret
 DrawTank1 endp
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 DrawObstacles proc
 
@@ -294,7 +307,7 @@ DrawObstacles proc
                 JNZ Draw 
                 ret
 DrawObstacles endp
-
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawBullets1 proc
 MOV SI,offset Bullets1
 MOV DI,[SI]
@@ -304,10 +317,14 @@ add SI,02h
                     CMP AX,0
                     JZ IncrementBullets
                     MOV CX,[SI]  
+                    sub cx,4
                     MOV DX,[SI]+2
+                    DrawHorizontalLine Cx,DX,4,0Eh
                     DrawHorizontalLine Cx,DX,4,01
                     MOV CX,[SI]
+                    sub cx,4
                     inc dx
+                    DrawHorizontalLine Cx,DX,4,0Eh
                     DrawHorizontalLine Cx,DX,4,01
         IncrementBullets:
                           ADD SI,6
@@ -316,6 +333,7 @@ add SI,02h
                ret
 
 DrawBullets1 endp;
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 MoveBullets1 proc
 MOV SI,offset Bullets1
@@ -332,16 +350,49 @@ add si,02h
                     MOV [SI],CX
                     jmp IncrementMove
         setzero: 
-                          MOV [SI]+4,0h
+                    MOV [SI]+4,0h
         IncrementMove:
-                          ADD SI,6
-                          dec DI
-                          jnz Movebullet             
+                    ADD SI,6
+                    dec DI
+                    jnz Movebullet             
                ret
 
 MoveBullets1 ENDP
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Collision proc 
+MOV  SI, OFFSET Obstacles
+mov DI,[SI]
+ADD SI,2
+TanksObst:      
+                 cmp [si]+8,0
+                 jz IncrementObstacles1
+                 collisionDetection X_Posi1,[SI],Tank_length,[SI]+6  ;tank and obs
+                 mov bl,al
+                 collisionDetection Y_Posi,[SI]+2,Tank_length,[SI]+4  ;tank and obs
+                 and al,bl
+                 jz IncrementObstacles1
+                 mov [SI]+8,0
+                 DrawRectangel [SI],[SI]+2,[SI]+4,[SI]+6,0Eh
+IncrementObstacles1:add si,10D
+                 dec DI
+                 jnz TanksObst
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+ret
+Collision ENDP
+;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 MAIN proc FAR
 
@@ -353,7 +404,7 @@ MAIN proc FAR
 
 	          mov           al,0
 	          mov           CX,00
-	          mov           DX,0FFFFh
+	          mov           DX,1827h
 	          mov           ah,6
 	          mov           bh,0Eh
 	          int           10h
@@ -361,20 +412,16 @@ MAIN proc FAR
 
                       
 	labeltest:
-                                mov al,0
-                mov CX,00
-                mov DX,0FFFFh
-                mov ah,6
-                mov bh,0Eh 
-                int 10h
-                ;Call interput 1ah ah =0    starttime 
+      
+                
                 Call Move_Tank1
                 Call MoveBullets1
+                call Collision
                 Call DrawObstacles
                 call DrawBullets1
                 Call DrawTank1
-                call delay
-
+                
+               
 
 
                 jmp labeltest  
