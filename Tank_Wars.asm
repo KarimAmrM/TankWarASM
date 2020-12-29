@@ -113,8 +113,8 @@ ENDM collisionDetection
         xObs    dw    ?
         lobs    dw    ?
         wobs    dw    ?
-        Bullets1 dw  20,0,0,1,57 dup(0)  
-        Bullets2 dw  20,80,50,1,57 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4]
+        Bullets1 dw  20,60 dup(0)  
+        Bullets2 dw  20,60 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4]
         Obstacles DW 4,50,50,10,5,1,20,50,10,5,1,250,0,20,6,1,200,50,10,20,1 ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8]1: to be drawn 0: Destroyed
         LengthRec DW  ?
         nBullets1 dw  ?
@@ -123,14 +123,10 @@ ENDM collisionDetection
 .code
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 delay       proc 
-            mov     cx, 001H
-         delRep: push    cx
-            mov     cx, 0H
-         delDec: dec     cx
-            jnz     delDec
-            pop     cx
-            dec     cx
-            jnz     delRep
+            mov cx,00h
+            mov dx,2120h
+            mov ah,86h
+            int 15h
             ret
 delay       endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -145,7 +141,8 @@ Move_Tank1 proc
                 JZ Move_Left
                 CMP AH,4DH
                 JZ Move_Right
-
+		CMP AH,39H
+                JZ Fire_Tank1
                 JMP No_Movement
         Move_up:
                 MOV AX,Y_Posi
@@ -191,11 +188,30 @@ Move_Tank1 proc
                 MOV CX,X_Posi1
                 push ax
                 DrawVerticalLine Cx,Y_Posi,28,0Eh
-               
                 pop ax
                 INC AX
                 MOV X_posi1,AX
                 JMP Read_Value
+		Fire_Tank1:
+		MOV SI , OFFSET Bullets1
+		MOv DI , [SI]
+		ADD SI , 2
+	 StoreBullets1:
+		MOV AX,[SI]+4
+		CMP AX,0
+		JNZ Occupied1
+		MOV CX,X_Posi1
+		ADD CX,28D
+		MOV [SI],CX
+		MOV DX,Y_posi
+		ADD DX,14D
+		MOV [SI]+2,DX
+		MOV [SI]+4,1
+		jmp Read_Value
+	Occupied1:
+		ADD SI,6D
+		DEC DI
+		JNZ StoreBullets1
         Read_Value:
                 RemoveValueBuffer
         No_Movement:    ret
@@ -480,6 +496,8 @@ IncBullets2:
  Bullets1Obst:
                cmp[si+4],0
                jz nextBullet
+               cmp [DI+8],0
+               JZ nextObstacle
                collisionDetection [si],[di],4,[di+6]
                mov bl,al
                collisionDetection [si+2],[di+2],2,[di+4]
@@ -496,13 +514,15 @@ IncBullets2:
                DrawHorizontalLine [SI],dx,4,0Eh
 
                DrawRectangel [di],[di]+2,[di]+4,[di]+6,0Eh
-               jmp nextBullet
         nextBullet:
                 add si,6
+                mov di,offset Obstacles
+                MOV AX,[DI]
+                mov nObstacles,AX
+                add di,2
                 mov cx,nBullets1
                 dec Cx
                 mov nBullets1,cx
-                mov di,offset Obstacles
                 jnz Bullets1Obst
                 jmp CollisionOf2ndBullets
                 
@@ -532,6 +552,8 @@ IncBullets2:
  Bullets2Obst:
                cmp[si+4],0
                jz nextBullet2
+               cmp [DI+8],0
+               JZ nextObstacle2
                collisionDetection [si],[di],4,[di+6]
                mov bl,al
                collisionDetection [si+2],[di+2],2,[di+4]
@@ -551,10 +573,13 @@ IncBullets2:
                jmp nextBullet2
         nextBullet2:
                 add si,6
+                mov di,offset Obstacles
+                MOV AX,[DI]
+                mov nObstacles,AX
+                ADD DI,2
                 mov cx,nBullets2
                 dec Cx
                 mov nBullets2,cx
-                mov di,offset Obstacles
                 jnz Bullets2Obst
                 jmp endl
                 
@@ -596,10 +621,7 @@ MAIN proc FAR
 	labeltest:
                 
               
-                 mov cx,00h
-                mov dx,2120h
-                mov ah,86h
-                int 15h
+                call delay
                 Call Move_Tank1
                 Call MoveBullets
                 call Collision
