@@ -99,6 +99,387 @@ collisionDetection Macro x1,x2,L1,L2
                 terminate: nop
 ENDM collisionDetection
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DrawTankDown MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
+        LOCAL firstloopTDown
+        LOCAL secondloopTDown
+        LOCAL thirdloopTDown
+        LOCAL fourthloopTDown
+        LOCAL fifthloopTDown       
+                        mov                si,2
+                       MOV                CX,Xpos
+	firstloopTDown:     
+	               MOV                Dx,Ypos
+	               DrawVerticalLine CX,DX,1,BackgroundColour
+	               DrawVerticalLine CX,DX,26D,TankColour
+                       DrawVerticalLine CX,DX,1,BackgroundColour
+	               MOV                Dx,Ypos
+	               add                Cx ,Tank_length
+                       DrawVerticalLine CX,DX,1,BackgroundColour
+	               DrawVerticalLine CX,DX,26D,TankColour
+                       DrawVerticalLine CX,DX,1,BackgroundColour
+	               sub                Cx ,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               inc                CX
+	               dec                SI
+	               jNz                firstloopTDown
+
+                       dec                CX
+	               mov                si,4
+	secondloopTDown:    
+	               mov                Dx,Ypos
+	               inc                Cx
+	               DrawVerticalLine CX,DX,1,TankColour
+	               DrawVerticalLine CX,DX,26,Colour
+	               DrawVerticalLine CX,DX,1,TankColour
+	               mov                Dx,Ypos
+	               add                CX,Tank_length
+	               DrawVerticalLine CX,DX,1,TankColour
+	               DrawVerticalLine CX,DX,26,Colour
+	               DrawVerticalLine CX,DX,1,TankColour
+	               sub                CX ,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                secondloopTDown
+
+                       mov                si,2
+	thirdloopTDown:     
+	               mov                DX,Ypos
+	               inc                Cx
+	               DrawVerticalLine CX,DX,28,TankColour
+	               mov                Dx,Ypos
+	               add                Cx,Tank_length
+	               DrawVerticalLine CX,DX,28,TankColour
+	               sub                CX,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                thirdloopTDown
+
+	               mov                si,4
+	fourthloopTDown:    
+	               mov                DX,Ypos
+	               inc                Cx
+	               DrawVerticalLine CX,DX,1,BackgroundColour
+	               DrawVerticalLine cx,dx,3,TankColour
+	               DrawVerticalLine cx,dx,15,Colour
+	               DrawVerticalLine cx,dx,5,TankColour
+                       DrawVerticalLine CX,DX,4,BackgroundColour
+	               mov                DX,Ypos
+	               add                Cx,Tank_length
+                       DrawVerticalLine CX,DX,1,BackgroundColour
+	               DrawVerticalLine cx,dx,3,TankColour
+	               DrawVerticalLine cx,dx,15,Colour
+	               DrawVerticalLine cx,dx,5,TankColour
+                       DrawVerticalLine CX,DX,4,BackgroundColour
+	               sub                Cx,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                 fourthloopTDown
+
+                       mov                si , 5
+	fifthloopTDown:   
+                       mov                DX,Ypos
+	               inc                CX
+	               DrawVerticalLine cx,dx,28,TankColour
+	               dec                SI
+	               jnz                fifthloopTDown
+                       mov Tank_length,28d 
+ENDM DrawTankDown
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DrawTankUP MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
+        LOCAL firstloopTup
+        LOCAL secondloopTup
+        LOCAL thirdloopTup
+        LOCAL fourthloopTup
+        LOCAL fifthloopTup       
+                        mov                si,2
+                       MOV                CX,Xpos
+	firstloopTup:     
+	               MOV                Dx,Ypos
+	               DrawVerticalLine CX,DX,1,BackgroundColour
+	               DrawVerticalLine CX,DX,26D,TankColour
+                       DrawVerticalLine CX,DX,1,BackgroundColour
+	               MOV                Dx,Ypos
+	               add                Cx ,Tank_length
+                       DrawVerticalLine CX,DX,1,BackgroundColour
+	               DrawVerticalLine CX,DX,26D,TankColour
+                       DrawVerticalLine CX,DX,1,BackgroundColour
+	               sub                Cx ,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               inc                CX
+	               dec                SI
+	               jNz                firstloopTup
+
+                       dec                CX
+	               mov                si,4
+	secondloopTup:    
+	               mov                Dx,Ypos
+	               inc                Cx
+	               DrawVerticalLine CX,DX,1,TankColour
+	               DrawVerticalLine CX,DX,26,Colour
+	               DrawVerticalLine CX,DX,1,TankColour
+	               mov                Dx,Ypos
+	               add                CX,Tank_length
+	               DrawVerticalLine CX,DX,1,TankColour
+	               DrawVerticalLine CX,DX,26,Colour
+	               DrawVerticalLine CX,DX,1,TankColour
+	               sub                CX ,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                secondloopTup
+
+                       mov                si,2
+	thirdloopTup:     
+	               mov                DX,Ypos
+	               inc                Cx
+	               DrawVerticalLine CX,DX,28,TankColour
+	               mov                Dx,Ypos
+	               add                Cx,Tank_length
+	               DrawVerticalLine CX,DX,28,TankColour
+	               sub                CX,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                thirdloopTup
+
+	               mov                si,4
+	fourthloopTup:    
+	               mov                DX,Ypos
+	               inc                Cx
+	               DrawVerticalLine CX,DX,4,BackgroundColour
+	               DrawVerticalLine cx,dx,5,TankColour
+	               DrawVerticalLine cx,dx,15,Colour
+	               DrawVerticalLine cx,dx,3,TankColour
+                       DrawVerticalLine CX,DX,1,BackgroundColour
+	               mov                DX,Ypos
+	               add                Cx,Tank_length
+                       DrawVerticalLine CX,DX,4,BackgroundColour
+	               DrawVerticalLine cx,dx,5,TankColour
+	               DrawVerticalLine cx,dx,15,Colour
+	               DrawVerticalLine cx,dx,3,TankColour
+                       DrawVerticalLine CX,DX,1,BackgroundColour
+	               sub                Cx,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                 fourthloopTup
+
+                       mov                si , 5
+	fifthloopTup:   
+                       mov                DX,Ypos
+	               inc                CX
+	               DrawVerticalLine cx,dx,28,TankColour
+	               dec                SI
+	               jnz                fifthloopTup
+                       mov Tank_length,28d 
+ENDM DrawTankUP
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DrawTankRight MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
+        LOCAL firstloopTR
+        LOCAL secondloopTR
+        LOCAL thirdloopTR
+        LOCAL fourthloopTR
+        LOCAL fifthloopTR
+
+                       mov                si,2
+	               MOV                Dx,Ypos
+	firstloopTR:     
+	               MOV                CX,Xpos
+	               DrawHorizontalLine CX,DX,1,BackgroundColour
+	               DrawHorizontalLine CX,DX,26D,TankColour
+                       DrawHorizontalLine CX,DX,1,BackgroundColour
+	               MOV                CX,Xpos
+	               add                dx ,Tank_length
+                       DrawHorizontalLine CX,DX,1,BackgroundColour
+	               DrawHorizontalLine CX,DX,26D,TankColour
+                       DrawHorizontalLine CX,DX,1,BackgroundColour
+	               sub                dx ,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               inc                dx
+	               dec                SI
+	               jnz                firstloopTR  
+	               
+                       dec                dx
+	               mov                si,4
+	secondloopTR:    
+	               mov                Cx,Xpos
+	               inc                dx
+	               DrawHorizontalLine CX,DX,1,TankColour
+	               DrawHorizontalLine CX,DX,26,Colour
+	               DrawHorizontalLine CX,DX,1,TankColour
+	               mov                Cx,Xpos
+	               add                dx,Tank_length
+	               DrawHorizontalLine CX,DX,1,TankColour
+	               DrawHorizontalLine CX,DX,26,Colour
+	               DrawHorizontalLine CX,DX,1,TankColour
+	               sub                dx ,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                secondloopTR
+
+
+	               mov                si,2
+	thirdloopTR:     
+	               mov                cx,Xpos
+	               inc                dx
+	               DrawHorizontalLine CX,DX,28,TankColour
+	               mov                cx,Xpos
+	               add                dx,Tank_length
+	               DrawHorizontalLine CX,DX,28,TankColour
+	               sub                dx,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                thirdloopTR
+
+	               mov                si,4
+	fourthloopTR:    
+	               mov                cx,Xpos
+	               inc                dx
+	               DrawHorizontalLine CX,DX,1,BackgroundColour
+	               DrawHorizontalLine cx,dx,3,TankColour
+	               DrawHorizontalLine cx,dx,15,Colour
+	               DrawHorizontalLine cx,dx,5,TankColour
+                       DrawHorizontalLine CX,DX,4,BackgroundColour
+	               mov                cx,Xpos
+	               add                dx,Tank_length
+                       DrawHorizontalLine CX,DX,1,BackgroundColour
+	               DrawHorizontalLine cx,dx,3,TankColour
+	               DrawHorizontalLine cx,dx,15,Colour
+	               DrawHorizontalLine cx,dx,5,TankColour
+                       DrawHorizontalLine CX,DX,4,BackgroundColour
+	               sub                dx,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                fourthloopTR
+
+                       mov                si , 5
+	fifthloopTR:    
+                       mov                cx,Xpos
+	               inc                dx
+	               DrawHorizontalLine cx,dx,28,TankColour
+	               dec                SI
+	               jnz                fifthloopTR
+                       mov Tank_length,28d
+ENDM DrawTankRight
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DrawTankLeft MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
+        LOCAL firstloopTL
+        LOCAL secondloopTL
+        LOCAL thirdloopTL
+        LOCAL fourthloopTL
+        LOCAL fifthloopTL
+
+                       mov                si,2
+	               MOV                Dx,Ypos
+	firstloopTL:     
+	               MOV                CX,Xpos
+	               DrawHorizontalLine CX,DX,1,BackgroundColour
+	               DrawHorizontalLine CX,DX,26D,TankColour
+                       DrawHorizontalLine CX,DX,1,BackgroundColour
+	               MOV                CX,Xpos
+	               add                dx ,Tank_length
+                       DrawHorizontalLine CX,DX,1,BackgroundColour
+	               DrawHorizontalLine CX,DX,26D,TankColour
+                       DrawHorizontalLine CX,DX,1,BackgroundColour
+	               sub                dx ,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               inc                dx
+	               dec                SI
+	               jnz                firstloopTL  
+	               
+                       dec                dx
+	               mov                si,4
+	secondloopTL:    
+	               mov                Cx,Xpos
+	               inc                dx
+	               DrawHorizontalLine CX,DX,1,TankColour
+	               DrawHorizontalLine CX,DX,26,Colour
+	               DrawHorizontalLine CX,DX,1,TankColour
+	               mov                Cx,Xpos
+	               add                dx,Tank_length
+	               DrawHorizontalLine CX,DX,1,TankColour
+	               DrawHorizontalLine CX,DX,26,Colour
+	               DrawHorizontalLine CX,DX,1,TankColour
+	               sub                dx ,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                secondloopTL
+
+
+	               mov                si,2
+	thirdloopTL:     
+	               mov                cx,Xpos
+	               inc                dx
+	               DrawHorizontalLine CX,DX,28,TankColour
+	               mov                cx,Xpos
+	               add                dx,Tank_length
+	               DrawHorizontalLine CX,DX,28,TankColour
+	               sub                dx,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                thirdloopTL
+
+	               mov                si,4
+	fourthloopTL:    
+	               mov                cx,Xpos
+	               inc                dx
+	               DrawHorizontalLine CX,DX,4,BackgroundColour
+	               DrawHorizontalLine cx,dx,5,TankColour
+	               DrawHorizontalLine cx,dx,15,Colour
+	               DrawHorizontalLine cx,dx,3,TankColour
+                       DrawHorizontalLine CX,DX,1,BackgroundColour
+	               mov                cx,Xpos
+	               add                dx,Tank_length
+                       DrawHorizontalLine CX,DX,4,BackgroundColour
+	               DrawHorizontalLine cx,dx,5,TankColour
+	               DrawHorizontalLine cx,dx,15,Colour
+	               DrawHorizontalLine cx,dx,3,TankColour
+                       DrawHorizontalLine CX,DX,1,BackgroundColour
+	               sub                dx,Tank_length
+	               mov                ax,Tank_length
+	               sub                ax,2
+	               mov                Tank_length,ax
+	               dec                SI
+	               jnz                fourthloopTL
+
+                       mov                si , 5
+	fifthloopTL:    
+                       mov                cx,Xpos
+	               inc                dx
+	               DrawHorizontalLine cx,dx,28,TankColour
+	               dec                SI
+	               jnz                fifthloopTL
+                       mov                Tank_length,28d
+ENDM DrawTankLeft
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 .MODEL Medium
 .386
 .STACK 64
@@ -106,9 +487,11 @@ ENDM collisionDetection
 	Tank1 Label Word
 	Tank1_Xpos  dw    150
 	Tank1_Ypos  dw    60
+        Tank1_Status dw   "R"
 	Tank2 Label Word
 	Tank2_Xpos  dw    180
 	Tank2_Ypos  dw    60
+        Tank2_Status dw   "L"
         Tank_length dw    28d
 	x       dw    ?
 	y       dw    ?
@@ -116,9 +499,9 @@ ENDM collisionDetection
         xObs    dw    ?
         lobs    dw    ?
         wobs    dw    ?
-        Bullets1 dw  20,60 dup(0)  
-        Bullets2 dw  20,60 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4]
-        Obstacles DW 4,50,50,10,5,1,20,50,10,5,1,250,0,20,6,1,200,50,10,20,1 ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8]1: to be drawn 0: Destroyed
+        Bullets1 dw  20,80 dup(0)  
+        Bullets2 dw  20,80 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4], Direction [+6]
+        Obstacles DW 4,50,50,10,5,1,20,50,10,5,1,250,0,20,6,1,200,50,10,20,1 ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8],: to be drawn 0: Destroyed
         LengthRec DW  ?
         nBullets1 dw  ?
         nBullets2 dw  ?
@@ -148,6 +531,7 @@ Tank1Action proc
                 JZ Fire_Tank1
                 JMP No_Movement
         Move_up:
+                MOV Tank1_Status,'UP'
                 MOV AX,Tank1_Ypos
                 CMP AX,0
                 JZ Read_Value
@@ -160,6 +544,7 @@ Tank1Action proc
                 MOV Tank1_Ypos,AX
                 JMP Read_Value
         Move_Down:
+                MOV Tank1_Status,'DO'
                 MOV AX,Tank1_Ypos
                 CMP AX,171
                 JZ Read_Value
@@ -171,6 +556,7 @@ Tank1Action proc
                 MOV Tank1_Ypos,AX
                 JMP Read_Value
         Move_Left:
+                MOV Tank1_Status,'L'
                 MOV AX,Tank1_Xpos
                 CMP AX,0
                 JZ Read_Value
@@ -185,6 +571,7 @@ Tank1Action proc
                 MOV Tank1_Xpos,AX
                 JMP Read_Value
         Move_Right:
+                MOV Tank1_Status,'R'
                 MOV AX,Tank1_Xpos
                 CMP AX,277
                 JZ Read_Value
@@ -218,7 +605,7 @@ Tank1Action proc
         Read_Value:
                 RemoveValueBuffer
         No_Movement:    ret
-Tank1Action ENDp
+ Tank1Action ENDp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Tank2Action proc
 	              MOV                AH,1
@@ -234,7 +621,8 @@ Tank2Action proc
 	              CMP                AL,'e'
 	              JZ                 Fire_Tank2
 	              JMP                No_Movement2
-	Move_up2:      
+	Move_up2:     
+                      MOV                Tank2_Status,'UP' 
 	              MOV                AX,Tank2_Ypos
 	              CMP                AX,0
 	              JZ                 Read_Value2
@@ -246,7 +634,8 @@ Tank2Action proc
 	              DEC                AX
 	              MOV                Tank2_Ypos,AX
 	              JMP                Read_Value2
-	Move_Down2:    
+	Move_Down2:
+                      MOV                Tank2_Status,'DO'    
 	              MOV                AX,Tank2_Ypos
 	              CMP                AX,171
 	              JZ                 Read_Value2
@@ -258,6 +647,7 @@ Tank2Action proc
 	              MOV                Tank2_Ypos,AX
 	              JMP                Read_Value2
 	Move_Left2:    
+                      MOV                Tank2_Status,'L' 
 	              MOV                AX,Tank2_Xpos
 	              CMP                AX,0
 	              JZ                 Read_Value2
@@ -271,7 +661,8 @@ Tank2Action proc
 	              DEC                AX
 	              MOV                Tank2_Xpos,AX
 	              JMP                Read_Value2
-	Move_Right2:   
+	Move_Right2:
+                      MOV                Tank2_Status,'R'    
 	              MOV                AX,Tank2_Xpos
 	              CMP                AX,277
 	              JZ                 Read_Value2
@@ -308,187 +699,51 @@ Tank2Action proc
 Tank2Action ENDP
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawTank1 proc 
-                       mov                si,2
-	               MOv                Dx,Tank1_Ypos
-	firstloop:     
-	               MOV                CX,Tank1_Xpos
-	               DrawHorizontalLine CX,DX,1,0Eh
-	               DrawHorizontalLine CX,DX,26D,00
-                       DrawHorizontalLine CX,DX,1,0Eh
-	               MOV                CX,Tank1_Xpos
-	               add                dx ,Tank_length
-                       DrawHorizontalLine CX,DX,1,0Eh
-	               DrawHorizontalLine CX,DX,26D,00
-                       DrawHorizontalLine CX,DX,1,0Eh
-	               sub                dx ,Tank_length
-	               mov                ax,Tank_length
-	               sub                ax,2
-	               mov                Tank_length,ax
-	               inc                dx
-	               dec                SI
-	               jz                beginsecondloop
-                       jmp                firstloop
-	beginsecondloop:dec                dx
-
-	               mov                si,4
-	secondloop:    
-	               mov                Cx,Tank1_Xpos
-	               inc                dx
-	               DrawHorizontalLine CX,DX,1,00
-	               DrawHorizontalLine CX,DX,26,01
-	               DrawHorizontalLine CX,DX,1,00
-	               mov                Cx,Tank1_Xpos
-	               add                dx,Tank_length
-	               DrawHorizontalLine CX,DX,1,00
-	               DrawHorizontalLine CX,DX,26,01
-	               DrawHorizontalLine CX,DX,1,00
-	               sub                dx ,Tank_length
-	               mov                ax,Tank_length
-	               sub                ax,2
-	               mov                Tank_length,ax
-	               dec                SI
-	               jz                 beginthirdloop
-	               jmp                secondloop
-
-	beginthirdloop:mov                si,2
-	thirdloop:     
-	               mov                cx,Tank1_Xpos
-	               inc                dx
-	               DrawHorizontalLine CX,DX,28,00
-	               mov                cx,Tank1_Xpos
-	               add                dx,Tank_length
-	               DrawHorizontalLine CX,DX,28,00
-	               sub                dx,Tank_length
-	               mov                ax,Tank_length
-	               sub                ax,2
-	               mov                Tank_length,ax
-	               dec                SI
-	               jnz                thirdloop
-
-	               mov                si,4
-	fourthloop:    
-	               mov                cx,Tank1_Xpos
-	               inc                dx
-	               DrawHorizontalLine CX,DX,1,0Eh
-	               DrawHorizontalLine cx,dx,3,00
-	               DrawHorizontalLine cx,dx,15,01
-	               DrawHorizontalLine cx,dx,5,00
-                       DrawHorizontalLine CX,DX,4,0Eh
-	               mov                cx,Tank1_Xpos
-	               add                dx,Tank_length
-                       DrawHorizontalLine CX,DX,1,0Eh
-	               DrawHorizontalLine cx,dx,3,00
-	               DrawHorizontalLine cx,dx,15,01
-	               DrawHorizontalLine cx,dx,5,00
-                       DrawHorizontalLine CX,DX,4,0Eh
-	               sub                dx,Tank_length
-	               mov                ax,Tank_length
-	               sub                ax,2
-	               mov                Tank_length,ax
-	               dec                SI
-	               jz                 beginfifthloop
-	               jmp                fourthloop
-
-	beginfifthloop:mov                si , 5
-	fifthloop:     mov                cx,Tank1_Xpos
-	               inc                dx
-	               DrawHorizontalLine cx,dx,28,00
-	               dec                SI
-	               jnz                fifthloop
-        mov Tank_length,28d
-        ret
+          MOV AX,Tank1_Status
+          CMP AX,'R'
+          Jz right
+          CMP AX,'L'
+          JZ left
+          CMP AX,'UP'
+          JZ up
+          CMP AX,'DO'
+          JZ down
+          up:
+          DrawTankUP Tank1_Xpos,Tank1_Ypos,01H,0Eh,0
+          JMP EndDrawTank1
+          down:
+          DrawTankDown Tank1_Xpos,Tank1_Ypos,01H,0Eh,0
+          JMP EndDrawTank1
+          left:
+          DrawTankLeft Tank1_Xpos,Tank1_Ypos,01H,0Eh,0
+          JMP EndDrawTank1
+          right:
+          DrawTankRight Tank1_Xpos,Tank1_Ypos,01H,0Eh,0
+          EndDrawTank1:ret
 DrawTank1 endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawTank2 proc
-	                  mov                si,2
-	                  MOv                Dx,Tank2_Ypos
-	firstloop2:       
-	                  MOV                CX,Tank2_Xpos
-	                  DrawHorizontalLine CX,DX,1,0Eh
-	                  DrawHorizontalLine CX,DX,26D,00
-	                  DrawHorizontalLine CX,DX,1,0Eh
-	                  MOV                CX,Tank2_Xpos
-	                  add                dx ,Tank_length
-	                  DrawHorizontalLine CX,DX,1,0Eh
-	                  DrawHorizontalLine CX,DX,26D,00
-	                  DrawHorizontalLine CX,DX,1,0Eh
-	                  sub                dx ,Tank_length
-	                  mov                ax,Tank_length
-	                  sub                ax,2
-	                  mov                Tank_length,ax
-	                  inc                dx
-	                  dec                SI
-	                  jz                 beginsecondloop22
-	                  jmp                firstloop2
-	beginsecondloop22:dec                dx
-
-	                  mov                si,4
-	secondloop2:      
-	                  mov                Cx,Tank2_Xpos
-	                  inc                dx
-	                  DrawHorizontalLine CX,DX,1,00
-	                  DrawHorizontalLine CX,DX,26,04
-	                  DrawHorizontalLine CX,DX,1,00
-	                  mov                Cx,Tank2_Xpos
-	                  add                dx,Tank_length
-	                  DrawHorizontalLine CX,DX,1,00
-	                  DrawHorizontalLine CX,DX,26,04
-	                  DrawHorizontalLine CX,DX,1,00
-	                  sub                dx ,Tank_length
-	                  mov                ax,Tank_length
-	                  sub                ax,2
-	                  mov                Tank_length,ax
-	                  dec                SI
-	                  jz                 beginthirdloop22
-	                  jmp                secondloop2
-
-	beginthirdloop22: mov                si,2
-	thirdloop2:       
-	                  mov                cx,Tank2_Xpos
-	                  inc                dx
-	                  DrawHorizontalLine CX,DX,28,00
-	                  mov                cx,Tank2_Xpos
-	                  add                dx,Tank_length
-	                  DrawHorizontalLine CX,DX,28,00
-	                  sub                dx,Tank_length
-	                  mov                ax,Tank_length
-	                  sub                ax,2
-	                  mov                Tank_length,ax
-	                  dec                SI
-	                  jnz                thirdloop2
-
-	                  mov                si,4
-	fourthloop2:      
-	                  mov                cx,Tank2_Xpos
-	                  inc                dx
-	                  DrawHorizontalLine CX,DX,4,0Eh
-	                  DrawHorizontalLine cx,dx,5,00
-	                  DrawHorizontalLine cx,dx,15,04
-	                  DrawHorizontalLine cx,dx,3,00
-	                  DrawHorizontalLine CX,DX,1,0Eh
-	                  mov                cx,Tank2_Xpos
-	                  add                dx,Tank_length
-	                  DrawHorizontalLine CX,DX,4,0Eh
-	                  DrawHorizontalLine cx,dx,5,00
-	                  DrawHorizontalLine cx,dx,15,04
-	                  DrawHorizontalLine cx,dx,3,00
-	                  DrawHorizontalLine CX,DX,1,0Eh
-	                  sub                dx,Tank_length
-	                  mov                ax,Tank_length
-	                  sub                ax,2
-	                  mov                Tank_length,ax
-	                  dec                SI
-	                  jz                 beginfifthloop22
-	                  jmp                fourthloop2
-
-	beginfifthloop22: mov                si , 5
-	fifthloop2:       mov                cx,Tank2_Xpos
-	                  inc                dx
-	                  DrawHorizontalLine cx,dx,28,00
-	                  dec                SI
-	                  jnz                fifthloop2
-	                  mov                Tank_length,28d
-
+          MOV AX,Tank2_Status
+          CMP AX,'R'
+          Jz right2
+          CMP AX,'L'
+          JZ left2
+          CMP AX,'UP'
+          JZ up2
+          CMP AX,'DO'
+          JZ down2
+          up2:
+          DrawTankUP Tank2_Xpos,Tank2_Ypos,04H,0Eh,0
+          JMP EndDrawTank2
+          down2:
+          DrawTankDown Tank2_Xpos,Tank2_Ypos,04H,0Eh,0
+          JMP EndDrawTank2
+          left2:
+          DrawTankLeft Tank2_Xpos,Tank2_Ypos,04H,0Eh,0
+          JMP EndDrawTank2
+          right2:
+          DrawTankRight Tank2_Xpos,Tank2_Ypos,04H,0Eh,0
+          EndDrawTank2:ret
         ret
 DrawTank2 endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -529,7 +784,7 @@ add SI,02h
                     DrawHorizontalLine Cx,DX,4,0Eh
                     DrawHorizontalLine Cx,DX,4,01
         IncrementBullets1:
-                          ADD SI,6
+                          ADD SI,6 ;kemo rkz ya m3rs 8
                           dec DI
                           jnz Drawbullet1   
 
@@ -553,7 +808,7 @@ add SI,02h
                     sub cx,8
                     DrawHorizontalLine Cx,DX,4,04H
         IncrementBullets2:
-                          ADD SI,6
+                          ADD SI,6 ;kemo rkz ya m3rs 8
                           dec DI
                           jnz Drawbullet2  
                           
@@ -641,9 +896,9 @@ IncrementObstacles1:add si,10D
                  dec DI
                  jnz Tank1Obst
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-MOV  SI, OFFSET Obstacles
-mov DI,[SI]
-ADD SI,2
+        MOV  SI, OFFSET Obstacles
+        mov DI,[SI]
+        ADD SI,2
 Tank2Obst:      
                  cmp [si]+8,0
                  jz IncrementObstacles2
@@ -668,9 +923,9 @@ IncrementObstacles2:add si,10D
 Bullets2Tank1:
                  cmp [si]+4,0
                  jz IncBullets2
-                 collisionDetection Tank1_Xpos,[SI],Tank_length,2  ;bullets from second tank and tank1
+                 collisionDetection Tank1_Xpos,[SI],Tank_length,4  ;bullets from second tank and tank1
                  mov bl,al
-                 collisionDetection Tank1_Ypos,[SI]+2,Tank_length,4  
+                 collisionDetection Tank1_Ypos,[SI]+2,Tank_length,1  
                  and al,bl
                  jz IncBullets2
                  mov [SI]+4,0
@@ -693,9 +948,9 @@ IncBullets2:
 Bullets1Tank2:
                  cmp [si]+4,0
                  jz IncBullets1
-                 collisionDetection Tank2_Xpos,[SI],Tank_length,2  ;bullets from first tank and tank2
+                 collisionDetection Tank2_Xpos,[SI],Tank_length,4  ;bullets from first tank and tank2
                  mov bl,al
-                 collisionDetection Tank2_Ypos,[SI]+2,Tank_length,4  
+                 collisionDetection Tank2_Ypos,[SI]+2,Tank_length,1  
                  and al,bl
                  jz IncBullets1
                  mov [SI]+4,0
@@ -734,7 +989,7 @@ IncBullets1:
                JZ nextObstacle
                collisionDetection [si],[di],4,[di+6]
                mov bl,al
-               collisionDetection [si+2],[di+2],2,[di+4]
+               collisionDetection [si+2],[di+2],1,[di+4]
                and al,bl
                jz nextObstacle ;jump if no collision
                mov [si+4],0
@@ -790,7 +1045,7 @@ IncBullets1:
                JZ nextObstacle2
                collisionDetection [si],[di],4,[di+6]
                mov bl,al
-               collisionDetection [si+2],[di+2],2,[di+4]
+               collisionDetection [si+2],[di+2],1,[di+4]
                and al,bl
                jz nextObstacle2 ;jump if no collision
                mov [si+4],0
@@ -864,7 +1119,7 @@ MAIN proc FAR
                 call DrawBullets
                 Call DrawTank1
                 Call DrawTank2
-               
+                ;DrawTankDown 80,80,03,0Eh,00H
 
 
                 jmp labeltest  
