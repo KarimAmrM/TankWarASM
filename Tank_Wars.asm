@@ -625,7 +625,7 @@ Collision proc
 MOV  SI, OFFSET Obstacles
 mov DI,[SI]
 ADD SI,2
-TanksObst:      
+Tank1Obst:      
                  cmp [si]+8,0
                  jz IncrementObstacles1
               
@@ -639,8 +639,26 @@ TanksObst:
                  DrawRectangel [SI],[SI]+2,[SI]+4,[SI]+6,0Eh
 IncrementObstacles1:add si,10D
                  dec DI
-                 jnz TanksObst
+                 jnz Tank1Obst
+;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+MOV  SI, OFFSET Obstacles
+mov DI,[SI]
+ADD SI,2
+Tank2Obst:      
+                 cmp [si]+8,0
+                 jz IncrementObstacles2
+              
 
+                 collisionDetection Tank2_Xpos,[SI],Tank_length,[SI]+6  ;tank and obs
+                 mov bl,al
+                 collisionDetection Tank2_Ypos,[SI]+2,Tank_length,[SI]+4  ;tank and obs
+                 and al,bl
+                 jz IncrementObstacles2
+                 mov [SI]+8,0
+                 DrawRectangel [SI],[SI]+2,[SI]+4,[SI]+6,0Eh
+IncrementObstacles2:add si,10D
+                 dec DI
+                 jnz Tank2Obst
  ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------                
 
                  Mov si,offset Bullets2
@@ -668,6 +686,33 @@ IncBullets2:
                  dec DI
                  jnz Bullets2Tank1
                  
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+                Mov si,offset Bullets1
+                Mov di,[si]
+                add si,2
+Bullets1Tank2:
+                 cmp [si]+4,0
+                 jz IncBullets1
+                 collisionDetection Tank2_Xpos,[SI],Tank_length,2  ;bullets from first tank and tank2
+                 mov bl,al
+                 collisionDetection Tank2_Ypos,[SI]+2,Tank_length,4  
+                 and al,bl
+                 jz IncBullets1
+                 mov [SI]+4,0
+                 mov cx,[si]
+                 sub cx,2
+                 mov [si],cx
+                 DrawHorizontalLine [si],[SI]+2,4,0Eh
+                 mov dx,[si]+2
+                 inc dx
+                 DrawHorizontalLine [SI],dx,4,0Eh
+IncBullets1:
+                 add si,6
+                 dec DI
+                 jnz Bullets1Tank2
+
+
+
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
                 mov si,offset Bullets1
