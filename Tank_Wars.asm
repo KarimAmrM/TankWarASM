@@ -664,14 +664,14 @@ Tank1Action proc
 		MOV     [SI]+4,1
 		jmp     Read_Value
         fireLeft1:
-                MOV [si+6],ax
+                MOV                [si+6],ax
                 MOV                CX,Tank1_Xpos
 	        MOV                [SI],CX
 	        MOV                DX,Tank1_Ypos
 	        ADD                DX,13D
 	        MOV                [SI]+2,DX
 	        MOV                [SI]+4,1
-                jmp Read_Value
+                jmp                Read_Value
 	Occupied1:
 		ADD SI,8        
 		DEC DI
@@ -883,25 +883,22 @@ add SI,02h
                 mov dx,[si+2]
                 DrawVerticalLine cx,dx,4,0Eh
                 DrawVerticalLine cx,dx,4,01d
-                jmp IncrementBullets1
+                  jmp IncrementBullets1
         FiredLeft1:
-                  MOV CX,[SI]  
-                    add cx,4
+                    MOV CX,[SI]  
                     MOV DX,[SI]+2
-                    DrawHorizontalLine Cx,DX,4,0Eh
-                    sub cx,8
                     DrawHorizontalLine Cx,DX,4,01h
-                    MOV CX,[SI]
-                    add cx,4
-                    inc dx
                     DrawHorizontalLine Cx,DX,4,0Eh
-                    sub cx,8
-                    DrawHorizontalLine Cx,DX,4,01H
+                    MOV CX,[SI]
+                    INC DX
+                    DrawHorizontalLine Cx,DX,4,01h
+                    DrawHorizontalLine Cx,DX,4,0EH
+                    jmp IncrementBullets1
         FiredRight1:
                     MOV CX,[SI]  
                     sub cx,4
                     MOV DX,[SI]+2
-                   DrawHorizontalLine Cx,DX,4,0Eh
+                    DrawHorizontalLine Cx,DX,4,0Eh
                     DrawHorizontalLine Cx,DX,4,01
                     MOV CX,[SI]
                     sub cx,4
