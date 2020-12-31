@@ -183,14 +183,14 @@ DrawTankDown MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
 	               dec                SI
 	               jnz                 fourthloopTDown
 
-                       mov                si , 5
+                       mov                si , 4
 	fifthloopTDown:   
                        mov                DX,Ypos
 	               inc                CX
 	               DrawVerticalLine cx,dx,28,TankColour
 	               dec                SI
 	               jnz                fifthloopTDown
-                       mov Tank_length,28d 
+                       mov Tank_length,27d 
 ENDM DrawTankDown
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawTankUP MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
@@ -199,7 +199,7 @@ DrawTankUP MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
         LOCAL thirdloopTup
         LOCAL fourthloopTup
         LOCAL fifthloopTup       
-                        mov                si,2
+                       mov                si,2
                        MOV                CX,Xpos
 	firstloopTup:     
 	               MOV                Dx,Ypos
@@ -277,14 +277,14 @@ DrawTankUP MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
 	               dec                SI
 	               jnz                 fourthloopTup
 
-                       mov                si , 5
+                       mov                si , 4
 	fifthloopTup:   
                        mov                DX,Ypos
 	               inc                CX
 	               DrawVerticalLine cx,dx,28,TankColour
 	               dec                SI
 	               jnz                fifthloopTup
-                       mov Tank_length,28d 
+                       mov Tank_length,27d 
 ENDM DrawTankUP
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawTankRight MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
@@ -373,14 +373,14 @@ DrawTankRight MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
 	               dec                SI
 	               jnz                fourthloopTR
 
-                       mov                si , 5
+                       mov                si , 4
 	fifthloopTR:    
                        mov                cx,Xpos
 	               inc                dx
 	               DrawHorizontalLine cx,dx,28,TankColour
 	               dec                SI
 	               jnz                fifthloopTR
-                       mov Tank_length,28d
+                       mov Tank_length,27d
 ENDM DrawTankRight
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawTankLeft MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
@@ -469,30 +469,30 @@ DrawTankLeft MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
 	               dec                SI
 	               jnz                fourthloopTL
 
-                       mov                si , 5
+                       mov                si , 4
 	fifthloopTL:    
                        mov                cx,Xpos
 	               inc                dx
 	               DrawHorizontalLine cx,dx,28,TankColour
 	               dec                SI
 	               jnz                fifthloopTL
-                       mov                Tank_length,28d
+                       mov                Tank_length,27d
 ENDM DrawTankLeft
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawFilledRectangle MACRO Xpos,Ypos,LengthR,WidthR,Colour
         LOCAL Draw
-        PUSHA
         MOV CX,Xpos
         MOV DX,Ypos
-        MOV DI,Xpos
-        ADD DI,LengthR
+        MOV BX,Xpos
+        ADD BX,LengthR
 Draw:
+        push BX
         DrawVerticalLine CX,DX,WidthR,Colour
         MOV DX,Ypos
         INC CX
-        CMP CX,DI
+        POP BX
+        CMP CX,BX
         JNZ Draw
-        POPA
 ENDM DrawFilledRectangle
 .MODEL Medium
 .386
@@ -506,7 +506,7 @@ ENDM DrawFilledRectangle
 	Tank2_Xpos  dw    180
 	Tank2_Ypos  dw    60
         Tank2_Status dw   "L"
-        Tank_length dw    28d
+        Tank_length dw    27d
 	x       dw    ?
 	y       dw    ?
         yObs    dw    ?
@@ -550,23 +550,26 @@ Tank1Action proc
                 CMP AX,0
                 JZ Read_Value
                 MOV DX,Tank1_Ypos
-                ADD DX,28d
+                ADD DX,26d
+                MOV y,DX
                 push ax
-                DrawHorizontalLine Tank1_Xpos,DX,28D,0Eh
+                DrawFilledRectangle Tank1_Xpos,y,29D,02H,0Eh
                 pop ax
-                DEC AX
+                SUB AX,2
                 MOV Tank1_Ypos,AX
                 JMP Read_Value
         Move_Down:
                 MOV Tank1_Status,'DO'
                 MOV AX,Tank1_Ypos
-                CMP AX,171
+                CMP AX,172
                 JZ Read_Value
                 MOV DX,Tank1_Ypos
+                DEC DX
+                MOV y,DX
                 push ax
-                DrawHorizontalLine Tank1_Xpos,DX,28D,0Eh
+                DrawFilledRectangle Tank1_Xpos,y,29D,04H,0Eh
                 pop ax
-                INC AX
+                ADD AX,2
                 MOV Tank1_Ypos,AX
                 JMP Read_Value
         Move_Left:
@@ -575,25 +578,26 @@ Tank1Action proc
                 CMP AX,0
                 JZ Read_Value
                 MOV CX,Tank1_Xpos
-                add cx,28D
+                add cx,26D
+                MOV X,CX
                 push ax
-                DrawVerticalLine Cx,Tank1_Ypos,28,0Eh
-                 dec cx
-                DrawVerticalLine Cx,Tank1_Ypos,28,0Eh
+                DrawFilledRectangle X,Tank1_Ypos,3,28D,0EH
                 pop ax
-                DEC AX
+                SUB AX,2
                 MOV Tank1_Xpos,AX
                 JMP Read_Value
         Move_Right:
                 MOV Tank1_Status,'R'
                 MOV AX,Tank1_Xpos
-                CMP AX,277
+                CMP AX,292
                 JZ Read_Value
                 MOV CX,Tank1_Xpos
+                DEC Cx
+                MOV X,CX
                 push ax
-                DrawVerticalLine Cx,Tank1_Ypos,28,0Eh
+                DrawFilledRectangle X,Tank1_Ypos,4,28D,0Eh
                 pop ax
-                INC AX
+                add AX,2
                 MOV Tank1_Xpos,AX
                 JMP Read_Value
 		Fire_Tank1:
@@ -641,23 +645,26 @@ Tank2Action proc
 	              CMP                AX,0
 	              JZ                 Read_Value2
 	              MOV                DX,Tank2_Ypos
-	              ADD                DX,28d
+	              ADD                DX,26d
+                      MOV                y,DX
 	              push               ax
-	              DrawHorizontalLine Tank2_Xpos,DX,28D,0Eh
+	              DrawFilledRectangle Tank2_Xpos,y,29D,02H,0Eh
 	              pop                ax
-	              DEC                AX
+	              SUB                AX,2
 	              MOV                Tank2_Ypos,AX
 	              JMP                Read_Value2
 	Move_Down2:
                       MOV                Tank2_Status,'DO'    
 	              MOV                AX,Tank2_Ypos
-	              CMP                AX,171
+	              CMP                AX,172
 	              JZ                 Read_Value2
 	              MOV                DX,Tank2_Ypos
+                      DEC                DX
+                      MOV                y,DX
 	              push               ax
-	              DrawHorizontalLine Tank2_Xpos,DX,28D,0Eh
+	              DrawFilledRectangle Tank2_Xpos,y,29D,04H,0Eh
 	              pop                ax
-	              INC                AX
+	              ADD                AX,2
 	              MOV                Tank2_Ypos,AX
 	              JMP                Read_Value2
 	Move_Left2:    
@@ -666,25 +673,26 @@ Tank2Action proc
 	              CMP                AX,0
 	              JZ                 Read_Value2
 	              MOV                CX,Tank2_Xpos
-	              add                cx,28D
+	              add                cx,26D
+                      mov                X,CX
 	              push               ax
-	              DrawVerticalLine   Cx,Tank2_Ypos,28,0Eh
-	              dec                cx
-	              DrawVerticalLine   Cx,Tank2_Ypos,28,0Eh
+                      DrawFilledRectangle X,Tank2_Ypos,3,28D,0EH
 	              pop                ax
-	              DEC                AX
+	              SUB                AX,2
 	              MOV                Tank2_Xpos,AX
 	              JMP                Read_Value2
 	Move_Right2:
                       MOV                Tank2_Status,'R'    
 	              MOV                AX,Tank2_Xpos
-	              CMP                AX,277
+	              CMP                AX,292
 	              JZ                 Read_Value2
 	              MOV                CX,Tank2_Xpos
+                      DEC                Cx
+                      MOV                X,CX
 	              push               ax
-	              DrawVerticalLine   Cx,Tank2_Ypos,28,0Eh
+	              DrawFilledRectangle X,Tank2_Ypos,4,28D,0Eh
 	              pop                ax
-	              INC                AX
+	              ADD                AX,2
 	              MOV                Tank2_Xpos,AX
 	              JMP                Read_Value2
 	Fire_Tank2:   
@@ -770,7 +778,7 @@ DrawObstacles proc
                 MOV AX,[SI]+8
                 CMP AX,0
                 JZ Increment
-                DrawRectangel [SI],[SI]+2,[SI]+4,[SI]+6,01
+                DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,00
         Increment:
                 ADD SI , 10D
                 DEC DI
@@ -843,7 +851,7 @@ add si,02h
                     MOV CX,[SI]    
                     INC CX
                     CMP CX,316
-                    jz setzero
+                    JGE setzero
                     MOV [SI],CX
                     jmp IncrementMove
         setzero:   
@@ -905,7 +913,7 @@ Tank1Obst:
                  and al,bl
                  jz IncrementObstacles1
                  mov [SI]+8,0
-                 DrawRectangel [SI],[SI]+2,[SI]+4,[SI]+6,0Eh
+                 DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,0EH
 IncrementObstacles1:add si,10D
                  dec DI
                  jnz Tank1Obst
@@ -924,7 +932,7 @@ Tank2Obst:
                  and al,bl
                  jz IncrementObstacles2
                  mov [SI]+8,0
-                 DrawRectangel [SI],[SI]+2,[SI]+4,[SI]+6,0Eh
+                 DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,0EH
 IncrementObstacles2:add si,10D
                  dec DI
                  jnz Tank2Obst
@@ -1016,7 +1024,7 @@ IncBullets1:
                inc dx
                DrawHorizontalLine [SI],dx,4,0Eh
 
-               DrawRectangel [di],[di]+2,[di]+4,[di]+6,0Eh
+               DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,0Eh
         nextBullet:
                 add si,6
                 mov di,offset Obstacles
@@ -1072,7 +1080,7 @@ IncBullets1:
                inc dx
                DrawHorizontalLine [SI],dx,7,0Eh
 
-               DrawRectangel [di],[di]+2,[di]+4,[di]+6,0Eh
+               DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,0Eh
                jmp nextBullet2
         nextBullet2:
                 add si,6
