@@ -97,7 +97,7 @@ collisionDetection Macro x1,x2,L1,L2
                 jmp terminate
                 
                 terminate: nop
-ENDM collisionDetection
+        ENDM collisionDetection
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawTankDown MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
         LOCAL firstloopTDown
@@ -479,7 +479,21 @@ DrawTankLeft MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
                        mov                Tank_length,28d
 ENDM DrawTankLeft
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+DrawFilledRectangle MACRO Xpos,Ypos,LengthR,WidthR,Colour
+        LOCAL Draw
+        PUSHA
+        MOV CX,Xpos
+        MOV DX,Ypos
+        MOV DI,Xpos
+        ADD DI,LengthR
+Draw:
+        DrawVerticalLine CX,DX,WidthR,Colour
+        MOV DX,Ypos
+        INC CX
+        CMP CX,DI
+        JNZ Draw
+        POPA
+ENDM DrawFilledRectangle
 .MODEL Medium
 .386
 .STACK 64
@@ -1111,6 +1125,7 @@ MAIN proc FAR
                 
               
                 call delay
+
                 Call Tank1Action
                 call Tank2Action
                 Call MoveBullets
@@ -1120,7 +1135,7 @@ MAIN proc FAR
                 Call DrawTank1
                 Call DrawTank2
                 ;DrawTankDown 80,80,03,0Eh,00H
-
+                ;DrawFilledRectangle 0,0,1000,20000,00h
 
                 jmp labeltest  
 MAIN ENDP
