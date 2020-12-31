@@ -531,10 +531,14 @@ delay       proc
 delay       endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Tank1Action proc
+           
+           MOV SI , OFFSET Bullets1
+		MOv DI , [SI]
+		ADD SI , 2
                 MOV AH,1
                 INT 16h
                 CMP AH,48H
-                JZ Move_up
+                JZ Move_Up
                 CMP AH,50H
                 JZ Move_Down
                 CMP AH,4BH
@@ -544,7 +548,9 @@ Tank1Action proc
 		CMP AH,39H
                 JZ Fire_Tank1
                 JMP No_Movement
-        Move_up:
+        
+               
+        Move_Up:
                 MOV Tank1_Status,'UP'
                 MOV AX,Tank1_Ypos
                 CMP AX,0
@@ -558,7 +564,10 @@ Tank1Action proc
                 SUB AX,2
                 MOV Tank1_Ypos,AX
                 JMP Read_Value
-        Move_Down:
+        
+        
+
+        Move_Down:        
                 MOV Tank1_Status,'DO'
                 MOV AX,Tank1_Ypos
                 CMP AX,172
@@ -572,7 +581,9 @@ Tank1Action proc
                 ADD AX,2
                 MOV Tank1_Ypos,AX
                 JMP Read_Value
-        Move_Left:
+        
+        
+        Move_Left:        
                 MOV Tank1_Status,'L'
                 MOV AX,Tank1_Xpos
                 CMP AX,0
@@ -586,6 +597,9 @@ Tank1Action proc
                 SUB AX,2
                 MOV Tank1_Xpos,AX
                 JMP Read_Value
+        
+                
+        
         Move_Right:
                 MOV Tank1_Status,'R'
                 MOV AX,Tank1_Xpos
@@ -600,24 +614,66 @@ Tank1Action proc
                 add AX,2
                 MOV Tank1_Xpos,AX
                 JMP Read_Value
-		Fire_Tank1:
+
+
+
+	Fire_Tank1:
 		MOV SI , OFFSET Bullets1
 		MOv DI , [SI]
 		ADD SI , 2
-	 StoreBullets1:
+	StoreBullets1:
 		MOV AX,[SI]+4
 		CMP AX,0
 		JNZ Occupied1
+                Mov ax,Tank1_Status
+                cmp ax,'UP'
+                jz fireUp1
+                cmp ax,'DO'
+                jz fireDown1
+                cmp ax,'L'
+                jz fireLeft1
+                cmp ax,'R'
+                jz fireRight1
+        fireUp1:
+                MOV [si+6],ax
+                mov cx,Tank1_Xpos
+                mov dx,Tank1_Ypos
+                add cx,13D
+                mov [si],cx
+                mov [si+2],dx
+                mov [si+4],1
+                jmp Read_Value
+        fireDown1:
+                MOV [si+6],ax
+                mov dx,Tank1_Ypos
+                add dx,28D
+                mov [si+2],dx
+                mov cx,Tank1_Xpos
+                add cx,13D
+                mov [si],cx
+                MOV [SI]+4,1
+                jmp Read_Value
+        fireRight1:
+                MOV [si+6],ax
 		MOV CX,Tank1_Xpos
-		ADD CX,28D
-		MOV [SI],CX
-		MOV DX,Tank1_Ypos
-		ADD DX,13D
-		MOV [SI]+2,DX
-		MOV [SI]+4,1
-		jmp Read_Value
+		ADD      CX,28D
+		MOV     [SI],CX
+		MOV     DX,Tank1_Ypos
+		ADD     DX,13D
+		MOV     [SI]+2,DX
+		MOV     [SI]+4,1
+		jmp     Read_Value
+        fireLeft1:
+                MOV [si+6],ax
+                MOV                CX,Tank1_Xpos
+	        MOV                [SI],CX
+	        MOV                DX,Tank1_Ypos
+	        ADD                DX,13D
+	        MOV                [SI]+2,DX
+	        MOV                [SI]+4,1
+                jmp Read_Value
 	Occupied1:
-		ADD SI,6D
+		ADD SI,8        
 		DEC DI
 		JNZ StoreBullets1
         Read_Value:
@@ -795,10 +851,57 @@ add SI,02h
                     MOV AX,[SI]+4
                     CMP AX,0
                     JZ IncrementBullets1
+                    mov ax,[si+6]
+                    cmp ax,'UP'
+                    jz FiredUp1
+                    cmp ax,'DO'
+                    jz FiredDown1
+                    cmp ax,'L'
+                    jz FiredLeft1
+                    cmp ax,'R'
+                    jz FiredRight1
+                    jmp IncrementBullets1
+        FiredUp1:   
+                mov cx,[si]
+                mov dx,[si+2]
+                sub dx,4
+                DrawVerticalLine cx,dx,4,01
+                DrawVerticalLine cx,dx,4,0Eh
+                mov dx,[si+2]
+                sub dx,4
+                inc cx 
+                 DrawVerticalLine cx,dx,4,01
+                DrawVerticalLine cx,dx,4,0EH
+               
+                jmp IncrementBullets1
+        FiredDown1:
+                mov cx,[si]
+                mov dx,[si+2]
+                DrawVerticalLine cx,dx,4,0EH
+                DrawVerticalLine cx,dx,4,01d
+                inc cx
+                mov dx,[si+2]
+                DrawVerticalLine cx,dx,4,0Eh
+                DrawVerticalLine cx,dx,4,01d
+                jmp IncrementBullets1
+        FiredLeft1:
+                  MOV CX,[SI]  
+                    add cx,4
+                    MOV DX,[SI]+2
+                    DrawHorizontalLine Cx,DX,4,0Eh
+                    sub cx,8
+                    DrawHorizontalLine Cx,DX,4,01h
+                    MOV CX,[SI]
+                    add cx,4
+                    inc dx
+                    DrawHorizontalLine Cx,DX,4,0Eh
+                    sub cx,8
+                    DrawHorizontalLine Cx,DX,4,01H
+        FiredRight1:
                     MOV CX,[SI]  
                     sub cx,4
                     MOV DX,[SI]+2
-                    DrawHorizontalLine Cx,DX,4,0Eh
+                   DrawHorizontalLine Cx,DX,4,0Eh
                     DrawHorizontalLine Cx,DX,4,01
                     MOV CX,[SI]
                     sub cx,4
@@ -806,7 +909,7 @@ add SI,02h
                     DrawHorizontalLine Cx,DX,4,0Eh
                     DrawHorizontalLine Cx,DX,4,01
         IncrementBullets1:
-                          ADD SI,6 ;kemo rkz ya m3rs 8
+                          ADD SI,8 
                           dec DI
                           jnz Drawbullet1   
 
@@ -848,6 +951,41 @@ add si,02h
                     MOV AX,[SI]+4
                     CMP AX,0
                     JZ IncrementMove
+                    mov bx,[si+6]
+                    cmp bx,'UP'
+                    jz moveUp1
+                    cmp bx,'DO'
+                    jz moveDown1
+                    cmp bx,'L'
+                    jz moveLeft1
+                    cmp bx,'R'
+                    jz moveRight1
+                    jmp IncrementMove
+        moveUp1:        
+                mov dx,[si+2]
+                cmp dx,0
+                jz setzero
+                dec dx
+                mov [si+2],dx
+                jmp IncrementMove
+        moveDown1:
+                mov dx,[si+2]
+                cmp dx,196
+                jge setzero
+                inc dx
+                mov [si+2],dx
+                jmp IncrementMove
+        moveLeft1:
+                    MOV AX,[SI]+4
+                    CMP AX,0
+                    JZ IncrementMove
+                    MOV CX,[SI]    
+                    dec CX
+                    CMP CX,0
+                    jz setzero
+                    MOV [SI],CX
+                    jmp IncrementMove       
+        moveRight1:
                     MOV CX,[SI]    
                     INC CX
                     CMP CX,316
@@ -856,6 +994,7 @@ add si,02h
                     jmp IncrementMove
         setzero:   
                     MOV [SI]+4,0h
+                    Mov [si+6],0
                     mov CX,[si]
                     dec CX
                     DrawHorizontalLine cx,[SI]+2,5,0Eh
@@ -865,7 +1004,7 @@ add si,02h
                     inc dx
                     DrawHorizontalLine cx,dx,5,0Eh
         IncrementMove:
-                    ADD SI,6
+                    ADD SI,8
                     dec DI
                     jnz Movebullets1
 
@@ -959,7 +1098,7 @@ Bullets2Tank1:
                  inc dx
                  DrawHorizontalLine [SI],dx,7,0Eh
 IncBullets2:
-                 add si,6
+                 add si,8
                  dec DI
                  jnz Bullets2Tank1
                  
@@ -984,7 +1123,7 @@ Bullets1Tank2:
                  inc dx
                  DrawHorizontalLine [SI],dx,4,0Eh
 IncBullets1:
-                 add si,6
+                 add si,8
                  dec DI
                  jnz Bullets1Tank2
 
@@ -1026,7 +1165,7 @@ IncBullets1:
 
                DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,0Eh
         nextBullet:
-                add si,6
+                add si,8
                 mov di,offset Obstacles
                 MOV AX,[DI]
                 mov nObstacles,AX
@@ -1083,7 +1222,7 @@ IncBullets1:
                DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,0Eh
                jmp nextBullet2
         nextBullet2:
-                add si,6
+                add si,8
                 mov di,offset Obstacles
                 MOV AX,[DI]
                 mov nObstacles,AX
@@ -1142,6 +1281,7 @@ MAIN proc FAR
                 call DrawBullets
                 Call DrawTank1
                 Call DrawTank2
+                
                 ;DrawTankDown 80,80,03,0Eh,00H
                 ;DrawFilledRectangle 0,0,1000,20000,00h
 
