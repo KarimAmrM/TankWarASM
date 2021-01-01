@@ -514,34 +514,34 @@ clearBullets MACRO
                 jmp endClear1
         ClearUpBullet1:
                 mov cx,[si]
-                DrawVerticalLine cx,[si+2],Bullet_Size,0Eh
+                DrawVerticalLine cx,[si+2],Bullet_Size,ScreenColour
                 inc cx
-                DrawVerticalLine cx,[si+2],Bullet_Size,0Eh
+                DrawVerticalLine cx,[si+2],Bullet_Size,ScreenColour
                 jmp endClear1
         ClearDownBullet1:
                 mov cx,[si]
-                DrawVerticalLine [si],[si+2],3,0Eh
+                DrawVerticalLine [si],[si+2],3,ScreenColour
                 inc cx
-                DrawVerticalLine CX,[si+2],3,0Eh
+                DrawVerticalLine CX,[si+2],3,ScreenColour
                 jmp endClear1
         ClearLeftBullet1:
                  mov cx,[si]
                  dec cx
                  mov [si],cx
-                 DrawHorizontalLine [si],[SI]+2,7,0Eh
+                 DrawHorizontalLine [si],[SI]+2,7,ScreenColour
                  mov dx,[si]+2
                  inc dx
-                 DrawHorizontalLine [SI],dx,7,0Eh
+                 DrawHorizontalLine [SI],dx,7,ScreenColour
                  jmp endClear1
         ClearRightBullet1:
                  mov cx,[si]
                  sub cx,2
-                 DrawHorizontalLine CX,[SI]+2,4,0Eh
+                 DrawHorizontalLine CX,[SI]+2,4,ScreenColour
                  mov cx,[si]
                  sub cx,2
                  mov dx,[si]+2
                  inc dx
-                 DrawHorizontalLine CX,dx,4,0Eh
+                 DrawHorizontalLine CX,dx,4,ScreenColour
                  jmp endClear1
 endClear1: mov [si+6],0  
 
@@ -562,6 +562,8 @@ ENDM clearBullets
         Tank2_Status dw   "L"
         Tank_length  dw    27d
         Bullet_Size  dw     2D
+        ScreenColour db    2AH
+        ObstacleColour db   01H
 	x       dw    ?
 	y       dw    ?
         yObs    dw    ?
@@ -614,7 +616,7 @@ Tank1Action proc
                 ADD DX,26d
                 MOV y,DX
                 push ax
-                DrawFilledRectangle Tank1_Xpos,y,29D,02H,0Eh
+                DrawFilledRectangle Tank1_Xpos,y,29D,02H,ScreenColour
                 pop ax
                 SUB AX,2
                 MOV Tank1_Ypos,AX
@@ -631,7 +633,7 @@ Tank1Action proc
                 DEC DX
                 MOV y,DX
                 push ax
-                DrawFilledRectangle Tank1_Xpos,y,29D,04H,0Eh
+                DrawFilledRectangle Tank1_Xpos,y,29D,04H,ScreenColour
                 pop ax
                 ADD AX,2
                 MOV Tank1_Ypos,AX
@@ -647,7 +649,7 @@ Tank1Action proc
                 add cx,26D
                 MOV X,CX
                 push ax
-                DrawFilledRectangle X,Tank1_Ypos,3,28D,0EH
+                DrawFilledRectangle X,Tank1_Ypos,3,28D,ScreenColour
                 pop ax
                 SUB AX,2
                 MOV Tank1_Xpos,AX
@@ -664,7 +666,7 @@ Tank1Action proc
                 DEC Cx
                 MOV X,CX
                 push ax
-                DrawFilledRectangle X,Tank1_Ypos,4,28D,0Eh
+                DrawFilledRectangle X,Tank1_Ypos,4,28D,ScreenColour
                 pop ax
                 add AX,2
                 MOV Tank1_Xpos,AX
@@ -759,7 +761,7 @@ Tank2Action proc
                 ADD DX,26d
                 MOV y,DX
                 push ax
-                DrawFilledRectangle Tank2_Xpos,y,29D,02H,0Eh
+                DrawFilledRectangle Tank2_Xpos,y,29D,02H,ScreenColour
                 pop ax
                 SUB AX,2
                 MOV Tank2_Ypos,AX
@@ -776,7 +778,7 @@ Tank2Action proc
                 DEC DX
                 MOV y,DX
                 push ax
-                DrawFilledRectangle Tank2_Xpos,y,29D,04H,0Eh
+                DrawFilledRectangle Tank2_Xpos,y,29D,04H,ScreenColour
                 pop ax
                 ADD AX,2
                 MOV Tank2_Ypos,AX
@@ -792,7 +794,7 @@ Tank2Action proc
                 add cx,26D
                 MOV X,CX
                 push ax
-                DrawFilledRectangle X,Tank2_Ypos,3,28D,0EH
+                DrawFilledRectangle X,Tank2_Ypos,3,28D,ScreenColour
                 pop ax
                 SUB AX,2
                 MOV Tank2_Xpos,AX
@@ -809,7 +811,7 @@ Tank2Action proc
                 DEC Cx
                 MOV X,CX
                 push ax
-                DrawFilledRectangle X,Tank2_Ypos,4,28D,0Eh
+                DrawFilledRectangle X,Tank2_Ypos,4,28D,ScreenColour
                 pop ax
                 add AX,2
                 MOV Tank2_Xpos,AX
@@ -892,16 +894,16 @@ DrawTank1 proc
           CMP AX,'DO'
           JZ down
           up:
-          DrawTankUP Tank1_Xpos,Tank1_Ypos,01H,0Eh,0
+          DrawTankUP Tank1_Xpos,Tank1_Ypos,01H,ScreenColour,0
           JMP EndDrawTank1
           down:
-          DrawTankDown Tank1_Xpos,Tank1_Ypos,01H,0Eh,0
+          DrawTankDown Tank1_Xpos,Tank1_Ypos,01H,ScreenColour,0
           JMP EndDrawTank1
           left:
-          DrawTankLeft Tank1_Xpos,Tank1_Ypos,01H,0Eh,0
+          DrawTankLeft Tank1_Xpos,Tank1_Ypos,01H,ScreenColour,0
           JMP EndDrawTank1
           right:
-          DrawTankRight Tank1_Xpos,Tank1_Ypos,01H,0Eh,0
+          DrawTankRight Tank1_Xpos,Tank1_Ypos,01H,ScreenColour,0
           EndDrawTank1:ret
 DrawTank1 endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -916,16 +918,16 @@ DrawTank2 proc
           CMP AX,'DO'
           JZ down2
           up2:
-          DrawTankUP Tank2_Xpos,Tank2_Ypos,04H,0Eh,0
+          DrawTankUP Tank2_Xpos,Tank2_Ypos,04H,ScreenColour,0
           JMP EndDrawTank2
           down2:
-          DrawTankDown Tank2_Xpos,Tank2_Ypos,04H,0Eh,0
+          DrawTankDown Tank2_Xpos,Tank2_Ypos,04H,ScreenColour,0
           JMP EndDrawTank2
           left2:
-          DrawTankLeft Tank2_Xpos,Tank2_Ypos,04H,0Eh,0
+          DrawTankLeft Tank2_Xpos,Tank2_Ypos,04H,ScreenColour,0
           JMP EndDrawTank2
           right2:
-          DrawTankRight Tank2_Xpos,Tank2_Ypos,04H,0Eh,0
+          DrawTankRight Tank2_Xpos,Tank2_Ypos,04H,ScreenColour,0
           EndDrawTank2:ret
         ret
 DrawTank2 endp
@@ -939,7 +941,7 @@ DrawObstacles proc
                 MOV AX,[SI]+8
                 CMP AX,0
                 JZ Increment
-                DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,00
+                DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,ObstacleColour
         Increment:
                 ADD SI , 10D
                 DEC DI
@@ -971,44 +973,44 @@ DrawBullets proc
                 mov dx,[si+2]
                 sub dx,2
                 DrawVerticalLine cx,dx,Bullet_Size,01
-                DrawVerticalLine cx,dx,Bullet_Size,0Eh
+                DrawVerticalLine cx,dx,Bullet_Size,ScreenColour
                 mov dx,[si+2]
                 sub dx,2
                 inc cx 
                 DrawVerticalLine cx,dx,Bullet_Size,01
-                DrawVerticalLine cx,dx,Bullet_Size,0EH
+                DrawVerticalLine cx,dx,Bullet_Size,ScreenColour
                
                 jmp IncrementBullets1
         FiredDown1:
                 mov cx,[si]
                 mov dx,[si+2]
-                DrawVerticalLine cx,dx,Bullet_Size,0EH
+                DrawVerticalLine cx,dx,Bullet_Size,ScreenColour
                 DrawVerticalLine cx,dx,Bullet_Size,01d
                 inc cx
                 mov dx,[si+2]
-                DrawVerticalLine cx,dx,Bullet_Size,0Eh
+                DrawVerticalLine cx,dx,Bullet_Size,ScreenColour
                 DrawVerticalLine cx,dx,Bullet_Size,01d
                   jmp IncrementBullets1
         FiredLeft1:
                     MOV CX,[SI]  
                     MOV DX,[SI]+2
                     DrawHorizontalLine Cx,DX,Bullet_Size,01h
-                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,ScreenColour
                     MOV CX,[SI]
                     INC DX
                     DrawHorizontalLine Cx,DX,Bullet_Size,01h
-                    DrawHorizontalLine Cx,DX,Bullet_Size,0EH
+                    DrawHorizontalLine Cx,DX,Bullet_Size,ScreenColour
                     jmp IncrementBullets1
         FiredRight1:
                     MOV CX,[SI]  
                     sub cx,2
                     MOV DX,[SI]+2
-                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,ScreenColour
                     DrawHorizontalLine Cx,DX,Bullet_Size,01
                     MOV CX,[SI]
                     sub cx,2
                     inc dx
-                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,ScreenColour
                     DrawHorizontalLine Cx,DX,Bullet_Size,01
         IncrementBullets1:
                           ADD SI,8 
@@ -1038,43 +1040,43 @@ add SI,02h
                 mov dx,[si+2]
                 sub dx,2
                 DrawVerticalLine cx,dx,Bullet_Size,04
-                DrawVerticalLine cx,dx,Bullet_Size,0Eh
+                DrawVerticalLine cx,dx,Bullet_Size,ScreenColour
                 mov dx,[si+2]
                 sub dx,2
                 inc cx 
                  DrawVerticalLine cx,dx,Bullet_Size,04
-                DrawVerticalLine cx,dx,Bullet_Size,0EH
+                DrawVerticalLine cx,dx,Bullet_Size,ScreenColour
                 jmp IncrementBullets2
         FiredDown2:
                 mov cx,[si]
                 mov dx,[si+2]
-                DrawVerticalLine cx,dx,Bullet_Size,0EH
+                DrawVerticalLine cx,dx,Bullet_Size,ScreenColour
                 DrawVerticalLine cx,dx,Bullet_Size,04d
                 inc cx
                 mov dx,[si+2]
-                DrawVerticalLine cx,dx,Bullet_Size,0Eh
+                DrawVerticalLine cx,dx,Bullet_Size,ScreenColour
                 DrawVerticalLine cx,dx,Bullet_Size,04d
                 jmp IncrementBullets2
         FiredLeft2:
                     MOV CX,[SI]  
                     MOV DX,[SI]+2
                     DrawHorizontalLine Cx,DX,Bullet_Size,04
-                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,ScreenColour
                     MOV CX,[SI]
                     INC DX
                     DrawHorizontalLine Cx,DX,Bullet_Size,04h
-                    DrawHorizontalLine Cx,DX,Bullet_Size,0EH
+                    DrawHorizontalLine Cx,DX,Bullet_Size,ScreenColour
                     jmp IncrementBullets2
         FiredRight2:
                     MOV CX,[SI]  
                     sub cx,2
                     MOV DX,[SI]+2
-                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,ScreenColour
                     DrawHorizontalLine Cx,DX,Bullet_Size,04
                     MOV CX,[SI]
                     sub cx,2
                     inc dx
-                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,ScreenColour
                     DrawHorizontalLine Cx,DX,Bullet_Size,04
         IncrementBullets2:
                           ADD SI,8
@@ -1084,8 +1086,6 @@ add SI,02h
 
 
 DrawBullets endp;
-;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------
 MoveBullets proc
 MOV SI,offset Bullets1
@@ -1206,7 +1206,6 @@ add si,02h
                ret
 
 MoveBullets ENDP
-
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Collision proc 
 MOV  SI, OFFSET Obstacles
@@ -1221,7 +1220,7 @@ Tank1Obst:
                  and al,bl
                  jz IncrementObstacles1
                  mov [SI]+8,0
-                 DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,0EH
+                 DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,ScreenColour
 IncrementObstacles1:add si,10D
                  dec DI
                  jnz Tank1Obst
@@ -1240,7 +1239,7 @@ Tank2Obst:
                  and al,bl
                  jz IncrementObstacles2
                  mov [SI]+8,0
-                 DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,0EH
+                 DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,ScreenColour
 IncrementObstacles2:add si,10D
                  dec DI
                  jnz Tank2Obst
@@ -1316,7 +1315,7 @@ IncBullets1:
                mov [di+8],0
                clearBullets
 
-               DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,0Eh
+               DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,ScreenColour
         nextBullet:
                 add si,8
                 mov di,offset Obstacles
@@ -1365,7 +1364,7 @@ IncBullets1:
                mov [si+4],0
                mov [di+8],0
                clearBullets
-               DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,0Eh
+               DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,ScreenColour
                jmp nextBullet2
         nextBullet2:
                 add si,8
@@ -1409,12 +1408,12 @@ MAIN proc FAR
 	          mov           CX,00
 	          mov           DX,1527h
 	          mov           ah,6
-	          mov           bh,0Eh
+	          mov           bh,ScreenColour
 	          int           10h
                   
                  DrawRectangel 10,177,10,80,0Fh
                  DrawFilledRectangle 12,179,20,6,01
-
+                 
                       
 	labeltest:
                 
