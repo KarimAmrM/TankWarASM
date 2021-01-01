@@ -495,63 +495,7 @@ Draw:
         JNZ Draw
 ENDM DrawFilledRectangle
 ;-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-clearBullets2 MACRO 
-        local ClearUpBullet2
-        local ClearDownBullet2
-        local ClearRightBullet2
-        local ClearLeftBullet2
-        local endClear
-
-                mov ax,[si+6]
-                cmp ax,'UP'
-                jz ClearUpBullet2
-                cmp ax,'DO'
-                jz ClearDownBullet2
-                cmp ax,'L'
-                jz ClearLeftBullet2
-                cmp ax,'R'
-                jz ClearRightBullet2
-                jmp endClear
-        ClearUpBullet2:
-                mov cx,[si]
-                DrawVerticalLine cx,[si+2],2,0Eh
-                inc cx
-                DrawVerticalLine cx,[si+2],2,0Eh
-                jmp endClear
-        ClearDownBullet2:
-                mov cx,[si]
-                mov dx,[si+2]
-                sub dx,2
-                DrawVerticalLine cx,dx,4,0Eh
-                inc cx
-                mov dx,[si+2]
-                sub dx,2
-                DrawVerticalLine cx,dx,4,0Eh
-                jmp endClear
-        ClearLeftBullet2:
-                mov cx,[si]
-                 dec cx
-                 mov [si],cx
-                 DrawHorizontalLine [si],[SI]+2,7,0Eh
-                 mov dx,[si]+2
-                 inc dx
-                 DrawHorizontalLine [SI],dx,7,0Eh
-                 jmp endClear
-        ClearRightBullet2:
-                DrawHorizontalLine [si],[SI]+2,2,0Eh
-                 mov dx,[si]+2
-                 inc dx
-                 DrawHorizontalLine [SI],dx,2,0Eh
-                 jmp endClear
-
-
-
-endClear:       mov [si+6],0  
-
-
-ENDM       
-;-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-clearBullets1 MACRO 
+clearBullets MACRO 
         local ClearUpBullet1
         local ClearDownBullet1
         local ClearRightBullet1
@@ -585,7 +529,7 @@ clearBullets1 MACRO
                 DrawVerticalLine cx,dx,4,0Eh
                 jmp endClear1
         ClearLeftBullet1:
-                mov cx,[si]
+                 mov cx,[si]
                  dec cx
                  mov [si],cx
                  DrawHorizontalLine [si],[SI]+2,7,0Eh
@@ -594,17 +538,21 @@ clearBullets1 MACRO
                  DrawHorizontalLine [SI],dx,7,0Eh
                  jmp endClear1
         ClearRightBullet1:
-                 DrawHorizontalLine [si],[SI]+2,2,0Eh
+                 mov cx,[si]
+                 sub cx,2
+                 DrawHorizontalLine CX,[SI]+2,4,0Eh
+                 mov cx,[si]
+                 sub cx,2
                  mov dx,[si]+2
                  inc dx
-                 DrawHorizontalLine [SI],dx,2,0Eh
+                 DrawHorizontalLine CX,dx,4,0Eh
                  jmp endClear1
 
 
 
 endClear1: mov [si+6],0  
 
-ENDM 
+ENDM clearBullets
 ;-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;=============================================================================================================================================================================================================================      
 .MODEL Medium
@@ -1196,7 +1144,7 @@ add si,02h
                     jmp IncrementMove
         setzero:   
                     MOV [SI]+4,0h
-                    clearBullets1  
+                    clearBullets  
                     
                     
         IncrementMove:
@@ -1256,7 +1204,7 @@ add si,02h
                     jmp IncrementMove2  
         setzero2:   
                     MOV [SI]+4,0h
-                    clearBullets2
+                    clearBullets
         IncrementMove2:
                     ADD SI,8
                     dec DI
@@ -1316,7 +1264,7 @@ Bullets2Tank1:
                  and al,bl
                  jz IncBullets2
                  mov [SI]+4,0
-                 clearBullets2
+                 clearBullets
 
                 
 
@@ -1339,7 +1287,7 @@ Bullets1Tank2:
                  jz IncBullets1
                  mov [SI]+4,0
                  mov [si+8],0
-                 clearBullets1
+                 clearBullets
 IncBullets1:
                  add si,8
                  dec DI
@@ -1373,7 +1321,7 @@ IncBullets1:
                jz nextObstacle ;jump if no collision
                mov [si+4],0
                mov [di+8],0
-               clearBullets1
+               clearBullets
 
                DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,0Eh
         nextBullet:
@@ -1423,7 +1371,7 @@ IncBullets1:
                jz nextObstacle2 ;jump if no collision
                mov [si+4],0
                mov [di+8],0
-               clearBullets2
+               clearBullets
                 DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,0Eh
                jmp nextBullet2
         nextBullet2:
