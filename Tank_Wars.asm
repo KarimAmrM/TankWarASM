@@ -520,13 +520,9 @@ clearBullets MACRO
                 jmp endClear1
         ClearDownBullet1:
                 mov cx,[si]
-                mov dx,[si+2]
-                sub dx,2
-                DrawVerticalLine cx,dx,4,0Eh
+                DrawVerticalLine [si],[si+2],3,0Eh
                 inc cx
-                mov dx,[si+2]
-                sub dx,2
-                DrawVerticalLine cx,dx,4,0Eh
+                DrawVerticalLine CX,[si+2],3,0Eh
                 jmp endClear1
         ClearLeftBullet1:
                  mov cx,[si]
@@ -1120,7 +1116,7 @@ add si,02h
                 jmp IncrementMove
         moveDown1:
                 mov dx,[si+2]
-                cmp dx,198
+                cmp dx,172
                 jge setzero
                 inc dx
                 mov [si+2],dx
@@ -1180,7 +1176,7 @@ add si,02h
                 jmp IncrementMove2
         moveDown2:
                 mov dx,[si+2]
-                cmp dx,198
+                cmp dx,172
                 jge setzero2
                 inc dx
                 mov [si+2],dx
@@ -1286,7 +1282,6 @@ Bullets1Tank2:
                  and al,bl
                  jz IncBullets1
                  mov [SI]+4,0
-                 mov [si+8],0
                  clearBullets
 IncBullets1:
                  add si,8
@@ -1414,7 +1409,7 @@ MAIN proc FAR
 
 	          mov           al,0
 	          mov           CX,00
-	          mov           DX,1827h
+	          mov           DX,1527h
 	          mov           ah,6
 	          mov           bh,0Eh
 	          int           10h
