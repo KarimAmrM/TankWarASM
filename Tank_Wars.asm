@@ -75,17 +75,17 @@ collisionDetection Macro x1,x2,L1,L2
         
                 MOV Ax,x1               ;we check to see if the object at xo,yo with length Lo collided with a tank, to get a collision the object has to be in the x range of the tank and its y range
                 cmp AX,x2               
-                JG secondCheck          ;if(xo<xt) go to second condition  
+                JGE secondCheck          ;if(xo<xt) go to second condition  
                 ADD AX,L1                     
                 cmp AX,x2               ;if(xo>x+lt) then there's no collision and we go to false label to set collision to 0                   
-                JL False                
+                JLE False                
                 JMP True
                 
         secondCheck:            ;the other check 
                 mov ax,x2               
                 add ax,L2
                 cmp Ax,x1               ;if(xt>xo+Lo) then there's no collision and we go to false label to set collision to 0
-                JL False
+                JLE False
                 JMP True
 
         False:
@@ -514,13 +514,15 @@ clearBullets MACRO
                 jmp endClear1
         ClearUpBullet1:
                 mov cx,[si]
-                DrawVerticalLine cx,[si+2],2,0Eh
+                DrawVerticalLine cx,[si+2],Bullet_Size,0Eh
                 inc cx
-                DrawVerticalLine cx,[si+2],2,0Eh
+                DrawVerticalLine cx,[si+2],Bullet_Size,0Eh
                 jmp endClear1
         ClearDownBullet1:
                 mov cx,[si]
-                DrawVerticalLine [si],[si+2],3,0Eh
+                mov dx,[si+2]
+                dec dx
+                DrawVerticalLine [si],dx,2,0Eh
                 inc cx
                 DrawVerticalLine CX,[si+2],3,0Eh
                 jmp endClear1
@@ -543,9 +545,6 @@ clearBullets MACRO
                  inc dx
                  DrawHorizontalLine CX,dx,4,0Eh
                  jmp endClear1
-
-
-
 endClear1: mov [si+6],0  
 
 ENDM clearBullets
@@ -563,7 +562,8 @@ ENDM clearBullets
 	Tank2_Xpos  dw    180
 	Tank2_Ypos  dw    60
         Tank2_Status dw   "L"
-        Tank_length dw    27d
+        Tank_length  dw    27d
+        Bullet_Size  dw     2D
 	x       dw    ?
 	y       dw    ?
         yObs    dw    ?
@@ -950,10 +950,10 @@ DrawObstacles proc
 DrawObstacles endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawBullets proc
-;Bullets from first tank
-MOV SI,offset Bullets1
-MOV DI,[SI]
-add SI,02h
+        ;Bullets from first tank
+        MOV SI,offset Bullets1
+        MOV DI,[SI]
+        add SI,02h
         Drawbullet1: 
                     MOV AX,[SI]+4
                     CMP AX,0
@@ -972,46 +972,46 @@ add SI,02h
                 mov cx,[si]
                 mov dx,[si+2]
                 sub dx,2
-                DrawVerticalLine cx,dx,2,01
-                DrawVerticalLine cx,dx,2,0Eh
+                DrawVerticalLine cx,dx,Bullet_Size,01
+                DrawVerticalLine cx,dx,Bullet_Size,0Eh
                 mov dx,[si+2]
                 sub dx,2
                 inc cx 
-                 DrawVerticalLine cx,dx,2,01
-                DrawVerticalLine cx,dx,2,0EH
+                DrawVerticalLine cx,dx,Bullet_Size,01
+                DrawVerticalLine cx,dx,Bullet_Size,0EH
                
                 jmp IncrementBullets1
         FiredDown1:
                 mov cx,[si]
                 mov dx,[si+2]
-                DrawVerticalLine cx,dx,2,0EH
-                DrawVerticalLine cx,dx,2,01d
+                DrawVerticalLine cx,dx,Bullet_Size,0EH
+                DrawVerticalLine cx,dx,Bullet_Size,01d
                 inc cx
                 mov dx,[si+2]
-                DrawVerticalLine cx,dx,2,0Eh
-                DrawVerticalLine cx,dx,2,01d
+                DrawVerticalLine cx,dx,Bullet_Size,0Eh
+                DrawVerticalLine cx,dx,Bullet_Size,01d
                   jmp IncrementBullets1
         FiredLeft1:
                     MOV CX,[SI]  
                     MOV DX,[SI]+2
-                    DrawHorizontalLine Cx,DX,2,01h
-                    DrawHorizontalLine Cx,DX,2,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,01h
+                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
                     MOV CX,[SI]
                     INC DX
-                    DrawHorizontalLine Cx,DX,2,01h
-                    DrawHorizontalLine Cx,DX,2,0EH
+                    DrawHorizontalLine Cx,DX,Bullet_Size,01h
+                    DrawHorizontalLine Cx,DX,Bullet_Size,0EH
                     jmp IncrementBullets1
         FiredRight1:
                     MOV CX,[SI]  
                     sub cx,2
                     MOV DX,[SI]+2
-                    DrawHorizontalLine Cx,DX,2,0Eh
-                    DrawHorizontalLine Cx,DX,2,01
+                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,01
                     MOV CX,[SI]
                     sub cx,2
                     inc dx
-                    DrawHorizontalLine Cx,DX,2,0Eh
-                    DrawHorizontalLine Cx,DX,2,01
+                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,01
         IncrementBullets1:
                           ADD SI,8 
                           dec DI
@@ -1039,45 +1039,45 @@ add SI,02h
                 mov cx,[si]
                 mov dx,[si+2]
                 sub dx,2
-                DrawVerticalLine cx,dx,2,04
-                DrawVerticalLine cx,dx,2,0Eh
+                DrawVerticalLine cx,dx,Bullet_Size,04
+                DrawVerticalLine cx,dx,Bullet_Size,0Eh
                 mov dx,[si+2]
                 sub dx,2
                 inc cx 
-                 DrawVerticalLine cx,dx,2,04
-                DrawVerticalLine cx,dx,2,0EH
+                 DrawVerticalLine cx,dx,Bullet_Size,04
+                DrawVerticalLine cx,dx,Bullet_Size,0EH
                 jmp IncrementBullets2
         FiredDown2:
                 mov cx,[si]
                 mov dx,[si+2]
-                DrawVerticalLine cx,dx,2,0EH
-                DrawVerticalLine cx,dx,2,04d
+                DrawVerticalLine cx,dx,Bullet_Size,0EH
+                DrawVerticalLine cx,dx,Bullet_Size,04d
                 inc cx
                 mov dx,[si+2]
-                DrawVerticalLine cx,dx,2,0Eh
-                DrawVerticalLine cx,dx,2,04d
+                DrawVerticalLine cx,dx,Bullet_Size,0Eh
+                DrawVerticalLine cx,dx,Bullet_Size,04d
                 jmp IncrementBullets2
         FiredLeft2:
                     MOV CX,[SI]  
                     MOV DX,[SI]+2
-                    DrawHorizontalLine Cx,DX,2,04
-                    DrawHorizontalLine Cx,DX,2,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,04
+                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
                     MOV CX,[SI]
                     INC DX
-                    DrawHorizontalLine Cx,DX,2,04h
-                    DrawHorizontalLine Cx,DX,2,0EH
+                    DrawHorizontalLine Cx,DX,Bullet_Size,04h
+                    DrawHorizontalLine Cx,DX,Bullet_Size,0EH
                     jmp IncrementBullets2
         FiredRight2:
                     MOV CX,[SI]  
                     sub cx,2
                     MOV DX,[SI]+2
-                    DrawHorizontalLine Cx,DX,2,0Eh
-                    DrawHorizontalLine Cx,DX,2,04
+                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,04
                     MOV CX,[SI]
                     sub cx,2
                     inc dx
-                    DrawHorizontalLine Cx,DX,2,0Eh
-                    DrawHorizontalLine Cx,DX,2,04
+                    DrawHorizontalLine Cx,DX,Bullet_Size,0Eh
+                    DrawHorizontalLine Cx,DX,Bullet_Size,04
         IncrementBullets2:
                           ADD SI,8
                           dec DI
@@ -1254,9 +1254,9 @@ IncrementObstacles2:add si,10D
 Bullets2Tank1:
                  cmp [si]+4,0
                  jz IncBullets2
-                 collisionDetection Tank1_Xpos,[SI],Tank_length,2  ;bullets from second tank and tank1
+                 collisionDetection Tank1_Xpos,[SI],Tank_length,Bullet_Size  ;bullets from second tank and tank1
                  mov bl,al
-                 collisionDetection Tank1_Ypos,[SI]+2,Tank_length,2  
+                 collisionDetection Tank1_Ypos,[SI]+2,Tank_length,Bullet_Size  
                  and al,bl
                  jz IncBullets2
                  mov [SI]+4,0
@@ -1276,9 +1276,9 @@ IncBullets2:
 Bullets1Tank2:
                  cmp [si]+4,0
                  jz IncBullets1
-                 collisionDetection Tank2_Xpos,[SI],Tank_length,4  ;bullets from first tank and tank2
+                 collisionDetection Tank2_Xpos,[SI],Tank_length,Bullet_Size  ;bullets from first tank and tank2
                  mov bl,al
-                 collisionDetection Tank2_Ypos,[SI]+2,Tank_length,1  
+                 collisionDetection Tank2_Ypos,[SI]+2,Tank_length,Bullet_Size  
                  and al,bl
                  jz IncBullets1
                  mov [SI]+4,0
@@ -1309,9 +1309,9 @@ IncBullets1:
                jz nextBullet
                cmp [DI+8],0
                JZ nextObstacle
-               collisionDetection [si],[di],2,[di+6]
+               collisionDetection [si],[di],Bullet_Size,[di+6]
                mov bl,al
-               collisionDetection [si+2],[di+2],1,[di+4]
+               collisionDetection [si+2],[di+2],Bullet_Size,[di+4]
                and al,bl
                jz nextObstacle ;jump if no collision
                mov [si+4],0
@@ -1359,15 +1359,15 @@ IncBullets1:
                jz nextBullet2
                cmp [DI+8],0
                JZ nextObstacle2
-               collisionDetection [si],[di],2,[di+6]
+               collisionDetection [si],[di],Bullet_Size,[di+6]
                mov bl,al
-               collisionDetection [si+2],[di+2],1,[di+4]
+               collisionDetection [si+2],[di+2],Bullet_Size,[di+4]
                and al,bl
                jz nextObstacle2 ;jump if no collision
                mov [si+4],0
                mov [di+8],0
                clearBullets
-                DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,0Eh
+               DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,0Eh
                jmp nextBullet2
         nextBullet2:
                 add si,8
