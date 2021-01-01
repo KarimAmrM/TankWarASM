@@ -520,9 +520,7 @@ clearBullets MACRO
                 jmp endClear1
         ClearDownBullet1:
                 mov cx,[si]
-                mov dx,[si+2]
-                dec dx
-                DrawVerticalLine [si],dx,2,0Eh
+                DrawVerticalLine [si],[si+2],3,0Eh
                 inc cx
                 DrawVerticalLine CX,[si+2],3,0Eh
                 jmp endClear1
@@ -1413,7 +1411,9 @@ MAIN proc FAR
 	          mov           ah,6
 	          mov           bh,0Eh
 	          int           10h
-
+                  
+                 DrawRectangel 10,177,10,80,0Fh
+                 DrawFilledRectangle 12,179,20,6,01
 
                       
 	labeltest:
