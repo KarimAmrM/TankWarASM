@@ -1403,225 +1403,196 @@ mov           DX,1727h
 mov           ah,6
 mov           bh,00
 int           10h
-MOV           CX,50D
+
+MOV           CX,50D ;Frame
 mov           DX,25D
-DrawFilledRectangle CX,DX,220D,5H,24H
-mov           CX,50D
-ADD           DX,5D
+DrawFilledRectangle CX,DX,5D,145D,24H
+DrawFilledRectangle CX,DX,210D,5D,24H
+DrawFilledRectangle CX,DX,5D,145D,24H
+MOV           CX,55D
+mov           DX,165D
+DrawFilledRectangle CX,DX,210D,5D,24H
 
-DrawFilledRectangle CX,DX,5D,5D,24H
-ADD CX,210D
-DrawFilledRectangle CX,DX,5D,5D,24H
 
-mov CX,50D
-ADD DX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-ADD CX,5D
-DrawFilledRectangle CX,DX,15D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,50D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,30D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,35D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,15D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,15D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-
-mov CX,50D
-ADD DX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-ADD CX,15D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,50D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,30D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,35D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,10D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,15D
-DrawFilledRectangle CX,DX,5D,5D,24H
-
-mov CX,50D
-ADD DX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,25D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,25D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,10D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,15D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
+MOV           CX,60D ;yellow left T
+mov           DX,35D
 DrawFilledRectangle CX,DX,10D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
+DrawFilledRectangle CX,DX,5D,45D,0EH
+MOV           CX,60D
+mov           DX,45D
+DrawFilledRectangle CX,DX,5D,25D,0EH
+MOV           CX,60D
+mov           DX,75D
+DrawFilledRectangle CX,DX,10D,5D,0EH
 
-mov CX,50D
-ADD DX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,15D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,15D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,10D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
+
+MOV           CX,80D ;T
+mov           DX,35D
+DrawFilledRectangle CX,DX,50D,10D,0BH
+MOV           CX,100D
+mov           DX,45D
+DrawFilledRectangle CX,DX,10D,30D,0BH
+MOV           CX,95D
+mov           DX,75D
 DrawFilledRectangle CX,DX,20D,5D,0BH
-ADD CX,15D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
 
-mov CX,50D
+
+MOV           CX,80D ;Blue left T
+mov           DX,50D
+DrawFilledRectangle CX,DX,5D,25D,20H
+DrawFilledRectangle CX,DX,10D,5D,20H
+SUB CX,5D
+ADD DX,10D
+DrawFilledRectangle CX,DX,5D,10D,20H
+MOV           CX,80D
+mov           DX,75D
+DrawFilledRectangle CX,DX,10D,5D,20H
+
+
+MOV           CX,115D ;Blue Right T
+mov           DX,50D
+DrawFilledRectangle CX,DX,10D,5D,20H
+DrawFilledRectangle CX,DX,5D,25D,20H
+SUB CX,15D
+MOV DX,60D
+DrawFilledRectangle CX,DX,5D,10D,20H
+MOV DX,75D
+DrawFilledRectangle CX,DX,10D,5D,20H
+
+MOV           CX,135D ; A
+mov           DX,35D
+DrawFilledRectangle CX,DX,30D,45D,0BH
+MOV           CX,145D
+mov           DX,45D
+DrawFilledRectangle CX,DX,10D,10D,00H
+MOV           CX,145D
+mov           DX,65D
+DrawFilledRectangle CX,DX,10D,15D,00H
+
+MOV           CX,170D ; n
+mov           DX,35D
+DrawFilledRectangle CX,DX,35D,45D,0BH
+MOV           CX,180D
+mov           DX,45D
+DrawFilledRectangle CX,DX,15D,35D,00H
+MOV           CX,185D
+mov           DX,50D
+DrawFilledRectangle CX,DX,5D,30D,20H
+
+MOV           CX,210D ; k
+mov           DX,35D
+DrawFilledRectangle CX,DX,30D,45D,0BH
+MOV           CX,220D 
+mov           DX,35D
+DrawFilledRectangle CX,DX,5D,15D,00H
+SUB           CX,5D
+mov           DX,65D
+DrawFilledRectangle CX,DX,5D,20D,00H
+MOV           CX,230D 
+mov           DX,50D
+DrawFilledRectangle CX,DX,5D,10D,00H
+MOV           CX,235D 
+mov           DX,40D
+DrawFilledRectangle CX,DX,5D,35D,00H
+
+MOV           CX,240D ; Yellow Right K
+mov           DX,45D
+DrawFilledRectangle CX,DX,10D,5D,0EH
+ADD DX,10D
+SUB CX,10D
+DrawFilledRectangle CX,DX,10D,5D,0EH
+ADD DX,10D
+SUB CX,10D
+DrawFilledRectangle CX,DX,10D,5D,0EH
+MOV           CX,245D 
+mov           DX,35D
+DrawFilledRectangle CX,DX,5D,45D,0EH
+DrawFilledRectangle CX,DX,10D,5D,0EH
+ADD DX,10D
+SUB CX,5D
+DrawFilledRectangle CX,DX,5D,25D,0EH
+MOV           CX,250D 
+mov           DX,75D
+DrawFilledRectangle CX,DX,10D,5D,0EH
+
+MOV CX,60D                              ;yellow left and right
+MOV DX,85D
+DrawFilledRectangle CX,DX,10D,10D,0EH   ;left
+MOV CX,250D                             ;right
+DrawFilledRectangle CX,DX,10D,10D,0EH
+MOV CX,60D                              ;left
+MOV DX,100D
+DrawFilledRectangle CX,DX,15D,25D,0EH
+MOV CX,60D
 ADD DX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
+DrawFilledRectangle CX,DX,5D,5D,00H
+ADD DX,10D
+DrawFilledRectangle CX,DX,5D,10D,00H
+SUB DX,10D
+DrawFilledRectangle CX,DX,5D,5D,00H
+MOV CX,245D                              ;Right
+MOV DX,100D
+DrawFilledRectangle CX,DX,15D,25D,0EH
+MOV CX,245D
+ADD DX,5D
+DrawFilledRectangle CX,DX,5D,5D,00H
+ADD DX,10D
+DrawFilledRectangle CX,DX,5D,10D,00H
+SUB DX,10D
+DrawFilledRectangle CX,DX,5D,5D,00H
+MOV CX,60D                              ;left
+MOV DX,130D
+DrawFilledRectangle CX,DX,5D,30D,0EH
 ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
+DrawFilledRectangle CX,DX,5D,30D,0EH
+SUB CX,15D
+ADD DX,15D
+DrawFilledRectangle CX,DX,15D,5D,00H
+SUB CX,10D
+SUB DX,5D
+DrawFilledRectangle CX,DX,5D,15D,0EH
+MOV CX,245D                               ;Right
+MOV DX,130D
+DrawFilledRectangle CX,DX,5D,30D,0EH
 ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,15D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,15D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
+DrawFilledRectangle CX,DX,5D,30D,0EH
+SUB CX,15D
+ADD DX,15D
+DrawFilledRectangle CX,DX,15D,5D,00H
+SUB CX,10D
+SUB DX,5D
+DrawFilledRectangle CX,DX,5D,15D,0EH
+
+MOV CX,75D                              ;I
+MOV DX,85D
+DrawFilledRectangle CX,DX,170D,10D,0BH
+MOV CX,75D                              
+MOV DX,90D
+DrawFilledRectangle CX,DX,5D,5D,00H
+MOV CX,240D                              
+MOV DX,90D
+DrawFilledRectangle CX,DX,5D,5D,00H
+MOV CX,145D                              
+MOV DX,95D
 DrawFilledRectangle CX,DX,30D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
+MOV CX,150D                              
+MOV DX,100D
 DrawFilledRectangle CX,DX,20D,5D,0BH
-ADD CX,10D
-DrawFilledRectangle CX,DX,10D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-
-mov CX,50D
-ADD DX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
+MOV CX,155D
+MOV DX,105D
+DrawFilledRectangle CX,DX,10D,35D,0BH
+MOV CX,150D
+MOV DX,140D
+DrawFilledRectangle CX,DX,20D,5D,0BH
+MOV CX,145D
+MOV DX,145D
 DrawFilledRectangle CX,DX,30D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,10D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-
-mov CX,50D
-ADD DX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,10D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,20H
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0BH
-ADD CX,5D
-DrawFilledRectangle CX,DX,10D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,0EH
-ADD CX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-
-mov CX,50D
-ADD DX,5D
-DrawFilledRectangle CX,DX,5D,5D,24H
-ADD CX,15D
-DrawFilledRectangle CX,DX,5D,5D,0EH
+MOV CX,110D
+MOV DX,150D
+DrawFilledRectangle CX,DX,105D,5D,0BH
+MOV CX,105D
+MOV DX,155D
+DrawFilledRectangle CX,DX,115D,5D,0BH
 
 ret
 LoadingScreen ENDP
