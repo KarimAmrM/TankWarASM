@@ -1605,12 +1605,7 @@ MAIN proc FAR
 	          MOV           AL,13H
 	          int           10H
 
-	          mov           al,0
-	          mov           CX,00
-	          mov           DX,1527h
-	          mov           ah,6
-	          mov           bh,ScreenColour
-	          int           10h
+
                   ;mov cx, 12
                 ; DrawRectangel 10,177,10,65,0Fh
                 ; mov cx,12D
@@ -1620,8 +1615,17 @@ MAIN proc FAR
                 ; INC CX
                 ; DrawFilledRectangle CX,179,20,6,01
                  call LoadingScreen
-         joke:jmp joke        
-                      
+                 mov DI,200D
+                 joke:
+                 call delay
+                 dec DI
+                 jNZ joke        
+                  mov           al,0
+	          mov           CX,00
+	          mov           DX,1527h
+	          mov           ah,6
+	          mov           bh,ScreenColour
+	          int           10h      
 	labeltest:
                 
               
