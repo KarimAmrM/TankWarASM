@@ -75,10 +75,10 @@ collisionDetection Macro x1,x2,L1,L2
         
                 MOV Ax,x1               ;we check to see if the object at xo,yo with length Lo collided with a tank, to get a collision the object has to be in the x range of the tank and its y range
                 cmp AX,x2               
-                JGE secondCheck          ;if(xo<xt) go to second condition  
+                JG secondCheck          ;if(xo<xt) go to second condition  
                 ADD AX,L1                     
                 cmp AX,x2               ;if(xo>x+lt) then there's no collision and we go to false label to set collision to 0                   
-                JLE False                
+                JL False                
                 JMP True
                 
         secondCheck:            ;the other check 
@@ -557,14 +557,18 @@ ENDM clearBullets
 	Tank1_Xpos  dw    150
 	Tank1_Ypos  dw    60
         Tank1_Status dw   "R"
+        Tank1_Health dw   "3"
 	Tank2 Label Word
 	Tank2_Xpos  dw    180
 	Tank2_Ypos  dw    60
         Tank2_Status dw   "L"
+        Tank2_Health dw   "3"
         Tank_length  dw    27d
         Bullet_Size  dw     2D
         ScreenColour db    2AH
         ObstacleColour db   01H
+        GameEndFlag   db    00H
+        extra   dw    ?
 	x       dw    ?
 	y       dw    ?
         yObs    dw    ?
@@ -588,9 +592,8 @@ delay       proc
             ret
 delay       endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Tank1Action proc
-           
-           MOV SI , OFFSET Bullets1
+Tank1Action proc       
+                MOV SI , OFFSET Bullets1
 		MOv DI , [SI]
 		ADD SI , 2
                 MOV AH,1
@@ -628,7 +631,7 @@ Tank1Action proc
         Move_Down:        
                 MOV Tank1_Status,'DO'
                 MOV AX,Tank1_Ypos
-                CMP AX,172
+                CMP AX,146
                 JZ Read_Value
                 MOV DX,Tank1_Ypos
                 DEC DX
@@ -737,7 +740,7 @@ Tank1Action proc
         Read_Value:
                 RemoveValueBuffer
         No_Movement:    ret
- Tank1Action ENDp
+Tank1Action ENDp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Tank2Action proc
 	              MOV                AH,1
@@ -773,7 +776,7 @@ Tank2Action proc
         Move_Down2:        
                 MOV Tank2_Status,'DO'
                 MOV AX,Tank2_Ypos
-                CMP AX,172
+                CMP AX,146
                 JZ Read_Value2
                 MOV DX,Tank2_Ypos
                 DEC DX
@@ -1125,9 +1128,9 @@ add si,02h
                     CMP AX,0
                     JZ IncrementMove
                     MOV CX,[SI]    
-                    dec CX
                     CMP CX,0
                     jz setzero
+                    dec CX
                     MOV [SI],CX
                     jmp IncrementMove       
         moveRight1:
@@ -1184,10 +1187,10 @@ add si,02h
                     MOV AX,[SI]+4
                     CMP AX,0
                     JZ IncrementMove2
-                    MOV CX,[SI]    
-                    dec CX
+                    MOV CX,[SI]   
                     CMP CX,0
                     jz setzero2
+                    dec CX
                     MOV [SI],CX
                     jmp IncrementMove2   
         moveRight2:
@@ -1259,6 +1262,14 @@ Bullets2Tank1:
                  jz IncBullets2
                  mov [SI]+4,0
                  clearBullets
+                 MOV AX,Tank1_Health
+                 DEC AX
+                 CMP AX,"0"
+                 JZ ZeroHealthT1
+                 MOV Tank1_Health,AX
+                 JMP IncBullets2
+ZeroHealthT1:    MOV GameEndFlag,2
+                 RET
 
                 
 
@@ -1281,6 +1292,15 @@ Bullets1Tank2:
                  jz IncBullets1
                  mov [SI]+4,0
                  clearBullets
+                 MOV AX,Tank2_Health
+                 DEC AX
+                 CMP AX,"0"
+                 JZ ZeroHealthT2
+                 MOV Tank2_Health,AX
+                 JMP IncBullets1
+ZeroHealthT2:    MOV GameEndFlag,1
+                 RET
+
 IncBullets1:
                  add si,8
                  dec DI
@@ -1711,6 +1731,85 @@ SUB CX,15D
 DrawFilledRectangle CX,DX,15D,5D,24H
 ret
 LoadingScreen ENDP
+;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DrawHealthBar Proc
+                MOV AX,Tank1_Health
+                SUB AX,"0"
+                CMP AX,0
+                JZ DrawHT2
+                MOV BX,AX
+                SUB AX,3
+                MOV DL,-1
+                IMUL DL
+                MOV extra,AX
+                MOV AX,BX 
+                push Ax
+                DrawRectangel 24,181,14,125,0Fh
+                pop AX
+                mov cx,26D
+        DrawFilledHT1:
+                push AX
+                DrawFilledRectangle CX,183,40,10,01
+                inc CX
+                POP AX
+                DEC AX
+                JNZ DrawFilledHT1
+
+                MOV AX,extra
+                CMP AX,0
+                JZ DrawHT2
+        DrawEmptyT1:
+                Push AX
+                DrawFilledRectangle CX,183,40,10,00
+                inc cx
+                POP AX
+                DEC AX
+                JNZ DrawEmptyT1
+
+
+
+        DrawHT2:     
+                MOV AX,Tank2_Health
+                SUB AX,"0"
+                CMP AX,0
+                JZ EndDraw
+                MOV BX,AX
+                SUB AX,3
+                MOV DL,-1
+                IMUL DL
+                MOV extra,AX
+                MOV AX,BX 
+                push Ax
+                DrawRectangel 174,181,13,125,0Fh
+                pop AX
+                mov cx,176D
+        DrawFilledHT2:
+                push AX
+                DrawFilledRectangle CX,183,40,10,04
+                inc CX
+                POP AX
+                DEC AX
+                JNZ DrawFilledHT2
+
+                MOV AX,extra
+                CMP AX,0
+                JZ EndDraw
+        DrawEmptyT2:
+                Push AX
+                DrawFilledRectangle CX,183,40,10,00
+                inc cx
+                POP AX
+                DEC AX
+                JNZ DrawEmptyT2
+
+
+        EndDraw:
+                ret
+DrawHealthBar ENDP
+;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DisplayGameOver proc
+DisplayGameOver ENDP
+;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 MAIN proc FAR
 
@@ -1732,7 +1831,7 @@ MAIN proc FAR
                   call LoadingScreen
                   mov DI,400D
                   joke:
-                  call delay
+                ;  call delay
                   dec DI
                   jNZ joke        
                   mov           al,0
@@ -1741,6 +1840,9 @@ MAIN proc FAR
 	          mov           ah,6
 	          mov           bh,ScreenColour
 	          int           10h      
+                
+
+
 	labeltest:
                 
               
@@ -1750,6 +1852,7 @@ MAIN proc FAR
                 call Tank2Action
                 Call MoveBullets
                 call Collision
+                Call DrawHealthBar
                 Call DrawObstacles
                 call DrawBullets
                 Call DrawTank1
@@ -1760,8 +1863,3 @@ MAIN proc FAR
                 jmp labeltest  
 MAIN ENDP
 END MAIN
-
-
-
-
-
