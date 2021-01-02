@@ -483,12 +483,13 @@ DrawFilledRectangle MACRO Xpos,Ypos,LengthR,WidthR,Colour
         LOCAL Draw
         MOV CX,Xpos
         MOV DX,Ypos
+        mov y,DX
         MOV BX,Xpos
         ADD BX,LengthR
 Draw:
         push BX
         DrawVerticalLine CX,DX,WidthR,Colour
-        MOV DX,Ypos
+        MOV DX,y
         INC CX
         POP BX
         CMP CX,BX
@@ -1395,6 +1396,235 @@ endl:
 ret
 Collision ENDP
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+LoadingScreen proc
+mov           al,0
+mov           CX,00
+mov           DX,1727h
+mov           ah,6
+mov           bh,00
+int           10h
+MOV           CX,50D
+mov           DX,25D
+DrawFilledRectangle CX,DX,220D,5H,24H
+mov           CX,50D
+ADD           DX,5D
+
+DrawFilledRectangle CX,DX,5D,5D,24H
+ADD CX,210D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+mov CX,50D
+ADD DX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+ADD CX,5D
+DrawFilledRectangle CX,DX,15D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,50D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,30D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,35D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,15D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,15D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+mov CX,50D
+ADD DX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+ADD CX,15D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,50D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,30D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,35D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,10D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,15D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+mov CX,50D
+ADD DX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,25D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,25D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,10D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,15D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+mov CX,50D
+ADD DX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,15D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,15D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,10D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,20D,5D,0BH
+ADD CX,15D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+mov CX,50D
+ADD DX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,15D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,15D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,30D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,20D,5D,0BH
+ADD CX,10D
+DrawFilledRectangle CX,DX,10D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+mov CX,50D
+ADD DX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,30D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,10D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+mov CX,50D
+ADD DX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,10D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,20H
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0BH
+ADD CX,5D
+DrawFilledRectangle CX,DX,10D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+mov CX,50D
+ADD DX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+ADD CX,15D
+DrawFilledRectangle CX,DX,5D,5D,0EH
+
+ret
+LoadingScreen ENDP
 
 MAIN proc FAR
 
@@ -1410,10 +1640,16 @@ MAIN proc FAR
 	          mov           ah,6
 	          mov           bh,ScreenColour
 	          int           10h
-                  
-                 DrawRectangel 10,177,10,80,0Fh
-                 DrawFilledRectangle 12,179,20,6,01
-                 
+                  ;mov cx, 12
+                ; DrawRectangel 10,177,10,65,0Fh
+                ; mov cx,12D
+                ; DrawFilledRectangle CX,179,20,6,01
+                ; inc CX
+                ; DrawFilledRectangle CX,179,20,6,01
+                ; INC CX
+                ; DrawFilledRectangle CX,179,20,6,01
+                 call LoadingScreen
+         joke:jmp joke        
                       
 	labeltest:
                 
