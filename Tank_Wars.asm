@@ -1594,6 +1594,121 @@ MOV CX,105D
 MOV DX,155D
 DrawFilledRectangle CX,DX,115D,5D,0BH
 
+MOV CX,80D                              ; Pink left P
+MOV DX,100D
+DrawFilledRectangle CX,DX,5D,25D,24H
+MOV CX,80D
+MOV DX,130D
+DrawFilledRectangle CX,DX,5D,30D,24H
+MOV CX,85D
+MOV DX,120D
+DrawFilledRectangle CX,DX,15D,5D,24H
+MOV CX,85D
+MOV DX,130D
+DrawFilledRectangle CX,DX,15D,5D,24H
+MOV CX,90D
+MOV DX,100D
+DrawFilledRectangle CX,DX,5D,15D,24H
+MOV CX,90D
+MOV DX,140D
+DrawFilledRectangle CX,DX,5D,20D,24H
+MOV CX,95D
+MOV DX,100D
+DrawFilledRectangle CX,DX,5D,5D,24H
+MOV CX,95D
+MOV DX,110D
+DrawFilledRectangle CX,DX,5D,5D,24H
+MOV CX,95D
+MOV DX,140D
+DrawFilledRectangle CX,DX,5D,5D,24H
+MOV CX,95D
+MOV DX,155D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+
+MOV CX,105D                             ;P
+MOV DX,100D
+DrawFilledRectangle CX,DX,30D,45D,0BH
+MOV CX,115D
+MOV DX,110D
+DrawFilledRectangle CX,DX,10D,10D,00H
+MOV CX,115D
+MOV DX,130D
+DrawFilledRectangle CX,DX,20D,15D,00H
+MOV CX,120D
+MOV DX,135D
+DrawFilledRectangle CX,DX,5D,10D,24H
+ADD CX,5D
+DrawFilledRectangle CX,DX,5D,10D,24H
+ADD CX,5D
+MOV DX,105D
+DrawFilledRectangle CX,DX,5D,35D,24H
+ADD DX,5D
+DrawFilledRectangle CX,DX,5D,5D,24H
+SUB CX,5D
+ADD DX,10D
+DrawFilledRectangle CX,DX,5D,5D,24H
+SUB CX,5D
+ADD DX,10D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+MOV CX,170D                             ;Pink Left T
+MOV DX,110D
+DrawFilledRectangle CX,DX,5D,25D,24H
+MOV DX,120D
+DrawFilledRectangle CX,DX,5D,5D,24H
+MOV DX,115D
+DrawFilledRectangle CX,DX,5D,15D,24H
+SUB CX,5D
+MOV DX,135D
+DrawFilledRectangle CX,DX,5D,10D,24H
+MOV DX,115D
+DrawFilledRectangle CX,DX,10D,5D,24H
+SUB CX,10D
+MOV DX,125D
+DrawFilledRectangle CX,DX,10D,5D,24H
+SUB CX,10D
+MOV DX,140D
+DrawFilledRectangle CX,DX,5D,5D,24H
+MOV DX,130D
+DrawFilledRectangle CX,DX,5D,5D,24H
+
+MOV CX,180D                             ;T
+MOV DX,100D
+DrawFilledRectangle CX,DX,50D,10D,0BH
+MOV CX,200D
+MOV DX,110D
+DrawFilledRectangle CX,DX,10D,30D,0BH
+MOV CX,195D
+MOV DX,140D
+DrawFilledRectangle CX,DX,20D,5D,0BH
+
+MOV CX,215D                             ;Pink Right T
+MOV DX,115D
+DrawFilledRectangle CX,DX,15D,5D,24H
+MOV CX,215D
+MOV DX,125D
+DrawFilledRectangle CX,DX,15D,5D,24H
+MOV CX,215D
+MOV DX,130D
+DrawFilledRectangle CX,DX,5D,5D,24H
+MOV CX,220D
+MOV DX,140D
+DrawFilledRectangle CX,DX,10D,5D,24H
+MOV CX,225D
+MOV DX,135D
+DrawFilledRectangle CX,DX,5D,5D,24H
+MOV CX,225D
+MOV DX,120D
+DrawFilledRectangle CX,DX,10D,5D,24H
+MOV DX,100D
+DrawFilledRectangle CX,DX,5D,60D,24H
+MOV DX,135D
+SUB CX,5D
+DrawFilledRectangle CX,DX,5D,5D,0H
+MOV DX,150D
+SUB CX,15D
+DrawFilledRectangle CX,DX,15D,5D,24H
 ret
 LoadingScreen ENDP
 
@@ -1614,12 +1729,12 @@ MAIN proc FAR
                 ; DrawFilledRectangle CX,179,20,6,01
                 ; INC CX
                 ; DrawFilledRectangle CX,179,20,6,01
-                 call LoadingScreen
-                 mov DI,200D
-                 joke:
-                 call delay
-                 dec DI
-                 jNZ joke        
+                  call LoadingScreen
+                  mov DI,400D
+                  joke:
+                  call delay
+                  dec DI
+                  jNZ joke        
                   mov           al,0
 	          mov           CX,00
 	          mov           DX,1527h
