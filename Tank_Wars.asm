@@ -585,7 +585,7 @@ ENDM RandomNumber
         ScreenColour db    2AH
         ObstacleColour db   01H
         GameEndFlag   db    00H
-        seed dw 1000D
+        seed dw ?
         extra   dw    ?
 	x       dw    ?
 	y       dw    ?
@@ -1875,8 +1875,11 @@ MAIN proc FAR
 	          MOV           AL,13H
 	          int           10H
 
+                  mov ah,02h
+                  int 1ah
+                  mov seed,dx
+                        
 
-                
                   call LoadingScreen
                   call LoadObstacles
                   mov           al,0
