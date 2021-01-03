@@ -97,7 +97,7 @@ collisionDetection Macro x1,x2,L1,L2
                 jmp terminate
                 
                 terminate: nop
-        ENDM collisionDetection
+ENDM collisionDetection
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawTankDown MACRO Xpos,Ypos,Colour,BackgroundColour,TankColour
         LOCAL firstloopTDown
@@ -548,8 +548,25 @@ endClear1: mov [si+6],0
 
 ENDM clearBullets
 ;-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RandomNumber MACRO max
+
+xor ax,ax                   
+mov ax,seed            
+xor dx,dx            
+mov bx,max
+       
+div bx               
+inc dx              
+mov ax,dx  
+
+MOV DX,seed
+ADD DX,AX
+MOV seed,DX
+
+ENDM RandomNumber
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;=============================================================================================================================================================================================================================      
-.MODEL Medium
+.MODEL MEDIUM
 .386
 .STACK 64
 .DATA
@@ -568,6 +585,7 @@ ENDM clearBullets
         ScreenColour db    2AH
         ObstacleColour db   01H
         GameEndFlag   db    00H
+        seed dw 1000D
         extra   dw    ?
 	x       dw    ?
 	y       dw    ?
@@ -577,12 +595,46 @@ ENDM clearBullets
         wobs    dw    ?
         Bullets1 dw  20,80 dup(0)  
         Bullets2 dw  20,80 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4], Direction [+6]
-        Obstacles DW 4,50,50,10,5,1,20,50,10,5,1,250,0,20,6,1,200,50,10,20,1 ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8],: to be drawn 0: Destroyed
+        Obstacles DW 40,200 dup(0) ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8],: to be drawn 0: Destroyed
         LengthRec DW  ?
         nBullets1 dw  ?
         nBullets2 dw  ?
         nObstacles dw ? 
+        
 .code
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+LoadObstacles   proc
+        mov si,offset Obstacles
+        mov di,[si]     ;Holds number of obstacles
+        add si,2        ; si: x , si+2 : y
+  FillObstacles:
+        
+        mov [si+8],1
+        mov [si+4],20
+  getAnotherX:
+
+        RandomNumber 320
+        mov bx,ax
+        add bx,[si+4]
+        cmp bx,319
+        jg getAnotherX ;obstacle in range add it to array
+        mov [si],ax
+     
+        
+        mov [si+6],10
+   getAnotherY:
+        RandomNumber 175
+        mov bx,ax
+        add bx,[si+6]
+        cmp bx,200
+        jg getAnotherY
+        mov [si+2],ax
+        add si,10
+        dec di
+        cmp di,0 
+        jnz FillObstacles
+        ret
+LoadObstacles   endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 delay       proc 
             mov cx,00h
@@ -740,7 +792,7 @@ Tank1Action proc
         Read_Value:
                 RemoveValueBuffer
         No_Movement:    ret
-Tank1Action ENDp
+Tank1Action ENDP
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Tank2Action proc
 	              MOV                AH,1
@@ -937,7 +989,7 @@ DrawTank2 proc
 DrawTank2 endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawObstacles proc
-
+                pusha
                 MOV SI, OFFSET Obstacles
                 MOV DI,[SI]
                 ADD SI,2
@@ -950,6 +1002,7 @@ DrawObstacles proc
                 ADD SI , 10D
                 DEC DI
                 JNZ Draw 
+                popa
                 ret
 DrawObstacles endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1225,6 +1278,7 @@ Tank1Obst:
                  jz IncrementObstacles1
                  mov [SI]+8,0
                  DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,ScreenColour
+                 Call DrawObstacles
 IncrementObstacles1:add si,10D
                  dec DI
                  jnz Tank1Obst
@@ -1244,6 +1298,7 @@ Tank2Obst:
                  jz IncrementObstacles2
                  mov [SI]+8,0
                  DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,ScreenColour
+                 Call DrawObstacles
 IncrementObstacles2:add si,10D
                  dec DI
                  jnz Tank2Obst
@@ -1337,6 +1392,7 @@ IncBullets1:
                clearBullets
 
                DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,ScreenColour
+               Call DrawObstacles
         nextBullet:
                 add si,8
                 mov di,offset Obstacles
@@ -1386,7 +1442,7 @@ IncBullets1:
                mov [di+8],0
                clearBullets
                DrawFilledRectangle [di],[di]+2,[di]+6,[di]+4,ScreenColour
-               jmp nextBullet2
+               Call DrawObstacles
         nextBullet2:
                 add si,8
                 mov di,offset Obstacles
@@ -1820,20 +1876,9 @@ MAIN proc FAR
 	          int           10H
 
 
-                  ;mov cx, 12
-                ; DrawRectangel 10,177,10,65,0Fh
-                ; mov cx,12D
-                ; DrawFilledRectangle CX,179,20,6,01
-                ; inc CX
-                ; DrawFilledRectangle CX,179,20,6,01
-                ; INC CX
-                ; DrawFilledRectangle CX,179,20,6,01
+                
                   call LoadingScreen
-                  mov DI,400D
-                  joke:
-                ;  call delay
-                  dec DI
-                  jNZ joke        
+                  call LoadObstacles
                   mov           al,0
 	          mov           CX,00
 	          mov           DX,1527h
@@ -1841,25 +1886,23 @@ MAIN proc FAR
 	          mov           bh,ScreenColour
 	          int           10h      
                 
-
-
+                
+                
 	labeltest:
                 
-              
+                
                 call delay
-
                 Call Tank1Action
                 call Tank2Action
                 Call MoveBullets
                 call Collision
                 Call DrawHealthBar
-                Call DrawObstacles
                 call DrawBullets
                 Call DrawTank1
                 Call DrawTank2
                
                 
 
-                jmp labeltest  
+        jmp labeltest  
 MAIN ENDP
 END MAIN
