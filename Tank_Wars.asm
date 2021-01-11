@@ -59,6 +59,7 @@ RemoveValueBuffer MACRO
     LOCAL NO_value
         MOV AH,1
         INT 16h
+        CMP AX,100H
         JZ NO_value
         MOV AH,0
         INT 16H
@@ -606,8 +607,7 @@ endm MoveCursor
         Bullets2 dw  20,80 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4], Direction [+6]
         Obstacles DW 40,200 dup(0) ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8],: to be drawn 0: Destroyed
         WidthObst DW 20
-        LengthObst DW 10
-        
+        LengthObst DW 10    
         LengthRec DW  ?
         nBullets1 dw  ?
         nBullets2 dw  ?
@@ -617,6 +617,8 @@ endm MoveCursor
         Tank1Score    DB "Tank 1 Score:$"
         Tank2Score    DB "Tank 2 Score:$"
         MainMenuFlag  DB 0   
+        keyboardBufferScan DB 48H,50H,4BH,4DH,39H,3EH,'$'
+        keyboardBufferAscii DB 'w','a','s','d','e','$'
 .code
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 LoadObstacles   proc
@@ -2009,7 +2011,42 @@ ContinueGame:
         RET
 CheckGameEnd ENDP
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+ClearBufferValues proc
+StartAgain:     MOV AH,1
+                INT 16H
+                CMP AH,1
+                JNZ IntializeValuesScan
+                CMP AL,0
+                JZ EmptyBuffer
+IntializeValuesScan: MOV BX,0
+                MOV SI,OFFSET keyboardBufferScan
+                DEC SI
+ClearValuesScan:
+                INC SI
+                CMP [SI],'$'
+                JZ  IntializeValuesAscii
+                CMP AH,[SI]
+                JNZ ClearValuesScan
+                MOV BX,1
+                JMP ClearValuesScan
+IntializeValuesAscii:
+                MOV SI,OFFSET keyboardBufferAscii
+                DEC SI
+ClearValuesAscii:
+                INC SI
+                CMP [SI],'$'
+                JZ  CheckExist
+                CMP AL,[SI]
+                JNZ ClearValuesAscii
+                MOV BX,1
+                JMP ClearValuesAscii
+CheckExist:     CMP BX,1
+                JZ EmptyBuffer
+                RemoveValueBuffer
+                JMP StartAgain
+EmptyBuffer:RET
+ClearBufferValues ENDP
+;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 MAIN proc FAR
 
 	          mov           ax,@data
@@ -2018,9 +2055,8 @@ MAIN proc FAR
                   CALL StartGame
                   CALL DrawObstacles
 	labeltest:
-                
-                
                 call delay
+                call ClearBufferValues
                 Call Tank1Action
                 call Tank2Action
                 Call MoveBullets
