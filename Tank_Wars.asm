@@ -566,25 +566,72 @@ MOV seed,DX
 
 ENDM RandomNumber
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Error macro
+       mov ax,0600h
+       mov bh,07
+       mov cx,0
+       mov dx,184FH                       ;clear screen
+       int 10h   
+
+
+        mov  dl, 10   ;Column
+        mov  dh, 09   ;Row
+        mov  bh, 0    ;Display page
+        mov  ah, 02h  ;SetCursorPosition
+        int  10h  
+
+       mov ah, 9
+       mov dx, offset InputString2
+       int 21h  
+endm Error             
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+storeString macro string
+ mov ah,0AH
+     mov dx,offset string
+     int 21h                               ;store input string
+endm storeString
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DisplayString macro string
+mov ah,9
+mov dx,offset string
+int 21h
+endm DisplayString 
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 MoveCursor macro x,y
-                 mov           dl, x        	;Column
+             mov           dl, x        	;Column
 	         mov           dh, y          	;Row
 	         mov           bh, 0           	;Display page
 	         mov           ah, 02h         	;SetCursorPosition
 	         int           10h
 endm MoveCursor
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+ClearScreen macro
+    mov           ax,0600h
+	mov           bh,07
+	mov           cx,0
+	mov           dx,184FH
+	int           10h
+endm ClearScreen
 ;=============================================================================================================================================================================================================================      
 .MODEL MEDIUM
 .386
 .STACK 64
 .DATA
+        InputString1 DB 'Please Enter your name:','$'
+        InputString2 DB 'Please Enter your name only alphabets in the first please','$'
+        InputString3 DB 'Press any key to continue','$'
+        InDATA1 db 15,?,15 dup('$')
+        InDATA2 db 15,?,15 dup('$')
+	menu_Message1    db '* To start chatting press F1','$'
+	menu_Message2    db '* To start game press F2','$'
+	menu_Message3    db '* To end the program press ESC','$'
+	notification_bar db '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -','$'
+        keyWorking    	 db "sh3'ala$"    
 	Tank1 Label Word
 	Tank1_Xpos  dw    150
 	Tank1_Ypos  dw    60
         Tank1_Status dw   "R"
-        Tank1_Health dw   "3"
+        Tank1_Health dw   "9"
 	Tank2 Label Word
 	Tank2_Xpos  dw    180
 	Tank2_Ypos  dw    60
@@ -614,13 +661,107 @@ endm MoveCursor
         nObstacles dw ? 
         Tank1WinText  DB "Tank 1 Wins$"
         Tank2WinText  DB "Tank 2 Wins$"
-        Tank1Score    DB "Tank 1 Score:$"
-        Tank2Score    DB "Tank 2 Score:$"
+        Tank1Score    DB "Tank 1 Health:$"
+        Tank2Score    DB "Tank 2 Health:$"
         MainMenuFlag  DB 0   
         keyboardBufferScan DB 48H,50H,4BH,4DH,39H,3EH,'$'
         keyboardBufferAscii DB 'w','a','s','d','e','$'
 .code
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RecieveNames proc
+             ClearScreen
+             jmp input1
+             error1:
+             Error InputString2
+             input1:
+             MoveCursor 20,12
+             DisplayString InputString1
+             storeString InDATA1
+             MoveCursor 20,15
+             DisplayString InputString3
+            mov si,offset InDATA1+2
+            check1:MOV  al,'Z'                	; Setting AL with the ascii of Z 
+	        CMP  [si],al               ; Check if the ascii is less than ascii of Z
+	        JG   check2             	
+
+            MOV  al,'A'                 ; Setting AL with the ascii of A
+            CMP  [si],al                ; Check if the ascii is greater than ascii of A
+            JL   error1
+         
+            jmp true1                   ;here we know its upperrcase letter
+          
+    check2:MOV  al,'z'                	; Setting AL with the ascii of z    here we want to know if its a lowercase letter or not 
+	       CMP  [si],al               	; Check if the ascii is less than ascii of z
+	       JG   error1             	
+
+           MOV  al,'a'                   ; Setting AL with the ascii of a
+           CMP  [si],al                  ; Check if the ascii is greater than ascii of a
+           JL   error1
+
+           jmp true1                     ; here we knew its a lowercase letter
+
+
+             
+      true1: mov ah,0
+             int 16h                               ;wait for key    
+             ClearScreen
+
+jmp input2
+
+    error2:
+    ClearScreen
+    MoveCursor 10,09
+    DisplayString InputString2
+    input2:
+    MoveCursor 20,12
+    DisplayString InputString1
+    storeString InDATA2
+    MoveCursor 20,15
+    DisplayString InputString3
+    mov si,offset InDATA2+2
+
+     check3:MOV  al,'Z'                	; Setting AL with the ascii of Z 
+	        CMP  [si],al               	; Check if the ascii is less than ascii of Z
+	        JG   check4             	
+
+            MOV  al,'A'                 ; Setting AL with the ascii of A
+            CMP  [si],al                ; Check if the ascii is greater than ascii of A
+            JL   error2
+         
+            jmp true2                  ;here we kknow its an uppercase letter
+          
+    check4:MOV  al,'z'                	; Setting AL with the ascii of z    here we want to know if its a lowercase letter or not 
+	       CMP  [si],al               	; Check if the ascii is less than ascii of z
+	       JG   error2            	
+
+           MOV  al,'a'                   ; Setting AL with the ascii of a
+           CMP  [si],al                  ; Check if the ascii is greater than ascii of a
+           JL   error2
+
+           jmp true2                    ;here we know its lowercase letter
+
+
+             
+      true2: mov ah,0
+             int 16h                               ;wait for key  
+             ClearScreen
+        RET              
+RecieveNames ENDP
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Mainmenu Proc
+                 MoveCursor    24,8
+	         DisplayString menu_Message1
+
+	         MoveCursor    24,10
+	         DisplayString menu_Message2
+
+	         MoveCursor    24,12
+	         DisplayString menu_Message3
+
+	         MoveCursor    0,20
+	         DisplayString notification_bar
+                 RET
+Mainmenu ENDP
 LoadObstacles   proc
         mov si,offset Obstacles
         mov di,[si]     ;Holds number of obstacles
@@ -1813,18 +1954,18 @@ DrawHealthBar Proc
                 CMP AX,0
                 JZ DrawHT2
                 MOV BX,AX
-                SUB AX,3
+                SUB AX,9
                 MOV DL,-1
                 IMUL DL
                 MOV extra,AX
                 MOV AX,BX 
                 push Ax
-                DrawRectangel 24,181,14,125,0Fh
+                DrawRectangel 24,181,13,128,0Fh
                 pop AX
                 mov cx,26D
         DrawFilledHT1:
                 push AX
-                DrawFilledRectangle CX,183,40,10,01
+                DrawFilledRectangle CX,183,13,10,01
                 inc CX
                 POP AX
                 DEC AX
@@ -1835,7 +1976,7 @@ DrawHealthBar Proc
                 JZ DrawHT2
         DrawEmptyT1:
                 Push AX
-                DrawFilledRectangle CX,183,40,10,00
+                DrawFilledRectangle CX,183,13,10,00
                 inc cx
                 POP AX
                 DEC AX
@@ -1849,18 +1990,18 @@ DrawHealthBar Proc
                 CMP AX,0
                 JZ EndDraw
                 MOV BX,AX
-                SUB AX,3
+                SUB AX,9
                 MOV DL,-1
                 IMUL DL
                 MOV extra,AX
                 MOV AX,BX 
                 push Ax
-                DrawRectangel 174,181,13,125,0Fh
+                DrawRectangel 174,181,13,128,0Fh
                 pop AX
                 mov cx,176D
         DrawFilledHT2:
                 push AX
-                DrawFilledRectangle CX,183,40,10,04
+                DrawFilledRectangle CX,183,13,10,04
                 inc CX
                 POP AX
                 DEC AX
@@ -1871,7 +2012,7 @@ DrawHealthBar Proc
                 JZ EndDraw
         DrawEmptyT2:
                 Push AX
-                DrawFilledRectangle CX,183,40,10,00
+                DrawFilledRectangle CX,183,13,10,00
                 inc cx
                 POP AX
                 DEC AX
@@ -1908,7 +2049,11 @@ StartGame proc
 	MOV           AL,13H
 	INT           10H
         call          LoadingScreen
-
+        MOV           DI,100
+Wait5sec:
+        call          delay
+        DEC           DI 
+        JNZ           Wait5sec
         MOV           ah,02h
         INT           1ah
         MOV           seed,dx
@@ -1923,11 +2068,11 @@ StartGame proc
 	mov           bh,ScreenColour
 	INT           10h   
 
-        MOV           Tank1_Health,'3'
+        MOV           Tank1_Health,'9'
         MOV           Tank1_Xpos,0D
         MOV           Tank1_Ypos,0D
         MOV           Tank1_Status,'R'
-        MOV           Tank2_Health,'3'
+        MOV           Tank2_Health,'9'
         MOV           Tank2_Xpos,292D
         MOV           Tank2_Ypos,146D
         MOV           Tank2_Status,'L'
@@ -2049,12 +2194,26 @@ ClearBufferValues ENDP
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 MAIN proc FAR
 
-	          mov           ax,@data
-	          mov           Ds,ax
-                      
-                  CALL StartGame
-                  CALL DrawObstacles
-	labeltest:
+	        mov           ax,@data
+	        mov           Ds,ax
+                CALL RecieveNames
+        Menu:   CALL Mainmenu
+        	get_char:
+	         mov           ah,08h
+	         int           21h
+	         mov           ah,1
+	         int           16h
+
+	         cmp           al,3bh          	;F1 compare
+	         cmp           al,3ch          	;F2 compare
+                 JZ            PLay
+	         mov           bl,01bh         	;ESC compare
+	         cmp           al,bl
+                 JZ            EndGame
+	         Jmp           get_char      
+        Play:   CALL StartGame
+                CALL DrawObstacles
+	GameLoop:
                 call delay
                 call ClearBufferValues
                 Call Tank1Action
@@ -2069,8 +2228,12 @@ MAIN proc FAR
                 
                 MOV AL,1
                 CMP AL,MainMenuFlag
-                JZ tamor
-        jmp labeltest  
-        tamor: JMP tamor
+                JZ Menu
+                jmp GameLoop 
+EndGame:
+                MoveCursor 0,0
+                ClearScreen
+                mov AH,4CH
+                INT 21h 
 MAIN ENDP
 END MAIN

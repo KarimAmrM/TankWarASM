@@ -77,7 +77,7 @@ Main proc near
              storeString InDATA1
              MoveCursor 20,15
              DisplayString InputString3
-             mov si,offset InDATA1+2
+            mov si,offset InDATA1+2
             check1:MOV  al,'Z'                	; Setting AL with the ascii of Z 
 	        CMP  [si],al               ; Check if the ascii is less than ascii of Z
 	        JG   check2             	
