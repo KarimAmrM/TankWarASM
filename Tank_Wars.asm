@@ -565,6 +565,15 @@ MOV seed,DX
 
 ENDM RandomNumber
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+MoveCursor macro x,y
+                 mov           dl, x        	;Column
+	         mov           dh, y          	;Row
+	         mov           bh, 0           	;Display page
+	         mov           ah, 02h         	;SetCursorPosition
+	         int           10h
+endm MoveCursor
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ;=============================================================================================================================================================================================================================      
 .MODEL MEDIUM
 .386
@@ -585,7 +594,7 @@ ENDM RandomNumber
         ScreenColour db    2AH
         ObstacleColour db   01H
         GameEndFlag   db    00H
-        seed dw ?
+        seed    dw    ?
         extra   dw    ?
 	x       dw    ?
 	y       dw    ?
@@ -596,11 +605,18 @@ ENDM RandomNumber
         Bullets1 dw  20,80 dup(0)  
         Bullets2 dw  20,80 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4], Direction [+6]
         Obstacles DW 40,200 dup(0) ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8],: to be drawn 0: Destroyed
+        WidthObst DW 20
+        LengthObst DW 10
+        
         LengthRec DW  ?
         nBullets1 dw  ?
         nBullets2 dw  ?
         nObstacles dw ? 
-        
+        Tank1WinText  DB "Tank 1 Wins$"
+        Tank2WinText  DB "Tank 2 Wins$"
+        Tank1Score    DB "Tank 1 Score:$"
+        Tank2Score    DB "Tank 2 Score:$"
+        MainMenuFlag  DB 0   
 .code
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 LoadObstacles   proc
@@ -610,23 +626,24 @@ LoadObstacles   proc
   FillObstacles:
         
         mov [si+8],1
-        mov [si+4],20
+        mov AX,LengthObst
+        mov [si+6],AX
   getAnotherX:
 
-        RandomNumber 320
+        RandomNumber 319
         mov bx,ax
-        add bx,[si+4]
+        add bx,[si+6]
         cmp bx,319
         jg getAnotherX ;obstacle in range add it to array
         mov [si],ax
      
-        
-        mov [si+6],10
+        mov AX,WidthObst
+        mov [si+4],AX
    getAnotherY:
         RandomNumber 175
         mov bx,ax
-        add bx,[si+6]
-        cmp bx,200
+        add bx,[si+4]
+        cmp bx,175
         jg getAnotherY
         mov [si+2],ax
         add si,10
@@ -1860,37 +1877,146 @@ DrawHealthBar Proc
 
 
         EndDraw:
-                ret
-DrawHealthBar ENDP
+        RET
+DrawHealthBar endp
+;------------------ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+EraseBullets proc
+	                 MOV                 SI,OFFSET Bullets1
+	                 MOV                 DI,[SI]
+	                 ADD                 SI,2
+	EraseBullets1:     
+                         MOV                 [SI+4],0
+                         ADD                 SI,8
+                         DEC                 DI
+                         JNZ                 EraseBullets1
+
+         	         MOV                 SI,OFFSET Bullets2
+	                 MOV                 DI,[SI]
+	                 ADD                 SI,2
+	EraseBullets2:     
+                         MOV                 [SI+4],0
+                         ADD                 SI,8
+                         DEC                 DI
+                         JNZ                 EraseBullets2                
+                         RET
+EraseBullets ENDP
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-DisplayGameOver proc
-DisplayGameOver ENDP
+StartGame proc
+        MOV           AH,0
+	MOV           AL,13H
+	INT           10H
+        call          LoadingScreen
+
+        MOV           ah,02h
+        INT           1ah
+        MOV           seed,dx
+        call          LoadObstacles
+        
+        Call          EraseBullets
+
+        mov           al,0
+	mov           CX,00
+	mov           DX,1527h
+	mov           ah,6
+	mov           bh,ScreenColour
+	INT           10h   
+
+        MOV           Tank1_Health,'3'
+        MOV           Tank1_Xpos,0D
+        MOV           Tank1_Ypos,0D
+        MOV           Tank1_Status,'R'
+        MOV           Tank2_Health,'3'
+        MOV           Tank2_Xpos,292D
+        MOV           Tank2_Ypos,146D
+        MOV           Tank2_Status,'L'
+        MOV           GameEndFlag,0
+        MOV           MainMenuFlag,0
+        RET
+StartGame ENDP
+;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CheckGameEnd proc
+        MOV     AL,2
+        CMP     AL,GameEndFlag
+        JZ      Tank2Wins
+        
+        MOV     AL,1
+        CMP     AL,GameEndFlag
+        JZ      Tank1Wins
+        
+        MOV     AH,1
+        INT     16h
+        CMP     AH,3Eh  
+        JZ      EndGameNoWinners
+        
+        JMP     ContinueGame
+
+Tank2Wins:
+        MOV AH,0
+        MOV AL,3
+        INT 10h 
+
+        MoveCursor 33,0
+        MOV AH,9
+        MOV DX,OFFSET Tank2WinText
+        INT 21h
+        
+        MOV MainMenuFlag,1
+
+        RET
+Tank1Wins:
+        MOV AH,0
+        MOV AL,3
+        INT 10h 
+
+        MoveCursor 33,0
+        MOV AH,9
+        MOV DX,OFFSET Tank1WinText
+        INT 21h
+        
+        MOV MainMenuFlag,1
+
+        RET
+EndGameNoWinners:
+        MOV AH,0
+        MOV AL,3
+        INT 10h 
+        RemoveValueBuffer
+
+        MoveCursor 12,0
+        MOV AH,9
+        MOV DX,OFFSET Tank1Score
+        INT 21h
+
+        MOV AH,2
+        MOV DX,Tank1_Health
+        INT 21H
+
+        MoveCursor 52,0
+
+        MOV AH,9
+        MOV DX,OFFSET Tank2Score
+        INT 21h
+
+        MOV AH,2
+        MOV DX,Tank2_Health
+        INT 21H
+
+
+        MOV MainMenuFlag,1
+
+        RET
+ContinueGame:
+        RET
+CheckGameEnd ENDP
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 MAIN proc FAR
 
 	          mov           ax,@data
 	          mov           Ds,ax
-	          MOV           AH,0
-	          MOV           AL,13H
-	          int           10H
-
-                  mov ah,02h
-                  int 1ah
-                  mov seed,dx
-                        
-
-                  call LoadingScreen
-                  call LoadObstacles
-                  mov           al,0
-	          mov           CX,00
-	          mov           DX,1527h
-	          mov           ah,6
-	          mov           bh,ScreenColour
-	          int           10h      
-                
-                
-                
+                      
+                  CALL StartGame
+                  CALL DrawObstacles
 	labeltest:
                 
                 
@@ -1903,9 +2029,12 @@ MAIN proc FAR
                 call DrawBullets
                 Call DrawTank1
                 Call DrawTank2
-               
+                Call CheckGameEnd
                 
-
+                MOV AL,1
+                CMP AL,MainMenuFlag
+                JZ tamor
         jmp labeltest  
+        tamor: JMP tamor
 MAIN ENDP
 END MAIN
