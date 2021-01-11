@@ -592,7 +592,7 @@ endm MoveCursor
         Tank_length  dw    27d
         Bullet_Size  dw     2D
         ScreenColour db    2AH
-        ObstacleColour db   01H
+        ObstacleColour db   00H
         GameEndFlag   db    00H
         seed    dw    ?
         extra   dw    ?
