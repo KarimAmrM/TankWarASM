@@ -612,6 +612,30 @@ ClearScreen macro
 	mov           dx,184FH
 	int           10h
 endm ClearScreen
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DisplayNumber macro NumberToDisplay
+local Divide1
+local Divide2
+        mov si, offset NumberToDisplay
+        mov ax, [si]
+        mov bx, 10d
+        mov cx, 0
+    Divide1:
+        mov bx, 10d
+        cwd
+        mov dx, 0
+        div bx
+        push dx
+        inc cx
+        cmp ax, 0
+        jnz Divide1
+    Divide2:
+        pop dx
+        add dx, '0'
+        MOV AH,2
+        INT 21H
+        loop Divide2
+endm DisplayNumber
 ;=============================================================================================================================================================================================================================      
 .MODEL MEDIUM
 .386
@@ -631,12 +655,12 @@ endm ClearScreen
 	Tank1_Xpos  dw    150
 	Tank1_Ypos  dw    60
         Tank1_Status dw   "R"
-        Tank1_Health dw   "9"
+        Tank1_Health dw   99
 	Tank2 Label Word
 	Tank2_Xpos  dw    180
 	Tank2_Ypos  dw    60
         Tank2_Status dw   "L"
-        Tank2_Health dw   "3"
+        Tank2_Health dw   99
         Tank_length  dw    27d
         Bullet_Size  dw     2D
         ScreenColour db    2AH
@@ -659,8 +683,8 @@ endm ClearScreen
         nBullets1 dw  ?
         nBullets2 dw  ?
         nObstacles dw ? 
-        Tank1WinText  DB "Tank 1 Wins$"
-        Tank2WinText  DB "Tank 2 Wins$"
+        Tank1WinText  DB "Tank 1 Wins $"
+        Tank2WinText  DB "Tank 2 Wins $"
         Tank1Score    DB "Tank 1 Health:$"
         Tank2Score    DB "Tank 2 Health:$"
         MainMenuFlag  DB 0   
@@ -1479,7 +1503,7 @@ Bullets2Tank1:
                  clearBullets
                  MOV AX,Tank1_Health
                  DEC AX
-                 CMP AX,"0"
+                 CMP AX,0
                  JZ ZeroHealthT1
                  MOV Tank1_Health,AX
                  JMP IncBullets2
@@ -1509,7 +1533,7 @@ Bullets1Tank2:
                  clearBullets
                  MOV AX,Tank2_Health
                  DEC AX
-                 CMP AX,"0"
+                 CMP AX,0
                  JZ ZeroHealthT2
                  MOV Tank2_Health,AX
                  JMP IncBullets1
@@ -1950,23 +1974,21 @@ LoadingScreen ENDP
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawHealthBar Proc
                 MOV AX,Tank1_Health
-                SUB AX,"0"
                 CMP AX,0
                 JZ DrawHT2
                 MOV BX,AX
-                SUB AX,9
+                SUB AX,99
                 MOV DL,-1
                 IMUL DL
                 MOV extra,AX
                 MOV AX,BX 
                 push Ax
-                DrawRectangel 24,181,13,128,0Fh
+                DrawRectangel 24,181,13,102,0Fh
                 pop AX
                 mov cx,26D
         DrawFilledHT1:
                 push AX
-                DrawFilledRectangle CX,183,13,10,01
-                inc CX
+                DrawFilledRectangle CX,183,1,10,01
                 POP AX
                 DEC AX
                 JNZ DrawFilledHT1
@@ -1976,8 +1998,7 @@ DrawHealthBar Proc
                 JZ DrawHT2
         DrawEmptyT1:
                 Push AX
-                DrawFilledRectangle CX,183,13,10,00
-                inc cx
+                DrawFilledRectangle CX,183,1,10,00
                 POP AX
                 DEC AX
                 JNZ DrawEmptyT1
@@ -1986,23 +2007,21 @@ DrawHealthBar Proc
 
         DrawHT2:     
                 MOV AX,Tank2_Health
-                SUB AX,"0"
                 CMP AX,0
                 JZ EndDraw
                 MOV BX,AX
-                SUB AX,9
+                SUB AX,99
                 MOV DL,-1
                 IMUL DL
                 MOV extra,AX
                 MOV AX,BX 
                 push Ax
-                DrawRectangel 174,181,13,128,0Fh
+                DrawRectangel 198,181,13,102,0Fh
                 pop AX
-                mov cx,176D
+                mov cx,200D
         DrawFilledHT2:
                 push AX
-                DrawFilledRectangle CX,183,13,10,04
-                inc CX
+                DrawFilledRectangle CX,183,1,10,04
                 POP AX
                 DEC AX
                 JNZ DrawFilledHT2
@@ -2012,13 +2031,10 @@ DrawHealthBar Proc
                 JZ EndDraw
         DrawEmptyT2:
                 Push AX
-                DrawFilledRectangle CX,183,13,10,00
-                inc cx
+                DrawFilledRectangle CX,183,1,10,00
                 POP AX
                 DEC AX
                 JNZ DrawEmptyT2
-
-
         EndDraw:
         RET
 DrawHealthBar endp
@@ -2068,11 +2084,11 @@ Wait5sec:
 	mov           bh,ScreenColour
 	INT           10h   
 
-        MOV           Tank1_Health,'9'
+        MOV           Tank1_Health,99
         MOV           Tank1_Xpos,0D
         MOV           Tank1_Ypos,0D
         MOV           Tank1_Status,'R'
-        MOV           Tank2_Health,'9'
+        MOV           Tank2_Health,99
         MOV           Tank2_Xpos,292D
         MOV           Tank2_Ypos,146D
         MOV           Tank2_Status,'L'
@@ -2107,6 +2123,11 @@ Tank2Wins:
         MOV DX,OFFSET Tank2WinText
         INT 21h
         
+        
+        MOV AH,9
+        MOV DX,OFFSET InDATA2+2
+        INT 21h
+
         MOV MainMenuFlag,1
 
         RET
@@ -2120,6 +2141,10 @@ Tank1Wins:
         MOV DX,OFFSET Tank1WinText
         INT 21h
         
+        MOV AH,9
+        MOV DX,OFFSET InDATA1+2
+        INT 21h
+
         MOV MainMenuFlag,1
 
         RET
@@ -2134,20 +2159,24 @@ EndGameNoWinners:
         MOV DX,OFFSET Tank1Score
         INT 21h
 
-        MOV AH,2
-        MOV DX,Tank1_Health
-        INT 21H
+        DisplayNumber Tank1_Health
+        
+        MoveCursor 12,1
+        MOV AH,9
+        MOV DX,OFFSET InDATA1+2
+        INT 21h
 
         MoveCursor 52,0
-
         MOV AH,9
         MOV DX,OFFSET Tank2Score
         INT 21h
 
-        MOV AH,2
-        MOV DX,Tank2_Health
-        INT 21H
-
+        DisplayNumber Tank2_Health
+       
+        MoveCursor 52,1
+        MOV AH,9
+        MOV DX,OFFSET InDATA2+2
+        INT 21h
 
         MOV MainMenuFlag,1
 
