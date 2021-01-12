@@ -551,17 +551,17 @@ ENDM clearBullets
 ;-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RandomNumber MACRO max
 
-xor ax,ax                   
-mov ax,seed            
-xor dx,dx            
-mov bx,max
+xor ax,ax         ;zeroing ax          
+mov ax,seed        ; storing seed coming from system ticks in first game load   
+xor dx,dx            ;zeroing dx
+mov bx,max              ;bx holds the max number we generate from 0-max
        
-div bx               
+div bx               ;div bx/ax the remainder is in dx which is then stored to be our next seed to provide a random number  
 inc dx              
 mov ax,dx  
 
 MOV DX,seed
-ADD DX,AX
+ADD DX,AX       ;the random number is in ax
 MOV seed,DX
 
 ENDM RandomNumber
@@ -644,13 +644,12 @@ endm DisplayNumber
         InputString1 DB 'Please Enter your name:','$'
         InputString2 DB 'Please Enter your name only alphabets in the first please','$'
         InputString3 DB 'Press any key to continue','$'
-        InDATA1 db 15,?,15 dup('$')
-        InDATA2 db 15,?,15 dup('$')
+        Player1Name db 15,?,15 dup('$')
+        Player2Name db 15,?,15 dup('$')
 	menu_Message1    db '* To start chatting press F1','$'
 	menu_Message2    db '* To start game press F2','$'
 	menu_Message3    db '* To end the program press ESC','$'
-	notification_bar db '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -','$'
-        keyWorking    	 db "sh3'ala$"    
+	notification_bar db '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -','$' 
 	Tank1 Label Word
 	Tank1_Xpos  dw    150
 	Tank1_Ypos  dw    60
@@ -668,12 +667,8 @@ endm DisplayNumber
         GameEndFlag   db    00H
         seed    dw    ?
         extra   dw    ?
-	x       dw    ?
+	x       dw    ?; helper x,y to use with macros
 	y       dw    ?
-        yObs    dw    ?
-        xObs    dw    ?
-        lobs    dw    ?
-        wobs    dw    ?
         Bullets1 dw  20,80 dup(0)  
         Bullets2 dw  20,80 dup(0)                       ;xB [] , yB[+2] , DrawStatus[+4], Direction [+6]
         Obstacles DW 40,200 dup(0) ;nObstacles, x , y[+2] , width[+4], length[+6] of obstacles , DrawStatus [+8],: to be drawn 0: Destroyed
@@ -700,10 +695,10 @@ RecieveNames proc
              input1:
              MoveCursor 20,12
              DisplayString InputString1
-             storeString InDATA1
+             storeString Player1Name
              MoveCursor 20,15
              DisplayString InputString3
-            mov si,offset InDATA1+2
+            mov si,offset Player1Name+2
             check1:MOV  al,'Z'                	; Setting AL with the ascii of Z 
 	        CMP  [si],al               ; Check if the ascii is less than ascii of Z
 	        JG   check2             	
@@ -739,10 +734,10 @@ jmp input2
     input2:
     MoveCursor 20,12
     DisplayString InputString1
-    storeString InDATA2
+    storeString Player2Name
     MoveCursor 20,15
     DisplayString InputString3
-    mov si,offset InDATA2+2
+    mov si,offset Player2Name+2
 
      check3:MOV  al,'Z'                	; Setting AL with the ascii of Z 
 	        CMP  [si],al               	; Check if the ascii is less than ascii of Z
@@ -792,27 +787,27 @@ LoadObstacles   proc
         add si,2        ; si: x , si+2 : y
   FillObstacles:
         
-        mov [si+8],1
-        mov AX,LengthObst
+        mov [si+8],1                    ;set obstacle to be drawn
+        mov AX,LengthObst               
         mov [si+6],AX
   getAnotherX:
 
-        RandomNumber 319
+        RandomNumber 319                  ;get a random x pos
         mov bx,ax
         add bx,[si+6]
-        cmp bx,319
+        cmp bx,319                              
         jg getAnotherX ;obstacle in range add it to array
         mov [si],ax
      
         mov AX,WidthObst
         mov [si+4],AX
    getAnotherY:
-        RandomNumber 175
+        RandomNumber 175                ; get a random y pos
         mov bx,ax
         add bx,[si+4]
         cmp bx,175
         jg getAnotherY
-        mov [si+2],ax
+        mov [si+2],ax                   ;loop through the rest of the obstacles
         add si,10
         dec di
         cmp di,0 
@@ -829,11 +824,14 @@ delay       proc
 delay       endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Tank1Action proc       
-                MOV SI , OFFSET Bullets1
+                MOV SI , OFFSET Bullets1                ;load bullets 
 		MOv DI , [SI]
 		ADD SI , 2
+                Mov Tank1_Stuck,dl
+                cmp dl,1
+                jz Read_Value
                 MOV AH,1
-                INT 16h
+                INT 16h                                 ;detect input to determine current tank animation
                 CMP AH,48H
                 JZ Move_Up
                 CMP AH,50H
@@ -846,7 +844,7 @@ Tank1Action proc
                 JZ Fire_Tank1
                 JMP No_Movement
         
-               
+               ;tank is facing up
         Move_Up:
                 MOV Tank1_Status,'UP'
                 MOV AX,Tank1_Ypos
@@ -863,7 +861,7 @@ Tank1Action proc
                 JMP Read_Value
         
         
-
+                ;tank is facing down
         Move_Down:        
                 MOV Tank1_Status,'DO'
                 MOV AX,Tank1_Ypos
@@ -879,7 +877,7 @@ Tank1Action proc
                 MOV Tank1_Ypos,AX
                 JMP Read_Value
         
-        
+                 ;tank is facing Left
         Move_Left:        
                 MOV Tank1_Status,'L'
                 MOV AX,Tank1_Xpos
@@ -896,7 +894,7 @@ Tank1Action proc
                 JMP Read_Value
         
                 
-        
+         ;tank is facing Right
         Move_Right:
                 MOV Tank1_Status,'R'
                 MOV AX,Tank1_Xpos
@@ -913,12 +911,12 @@ Tank1Action proc
                 JMP Read_Value
 
 
-
+        ;we pressed  the fire button
 	Fire_Tank1:
 		MOV SI , OFFSET Bullets1
 		MOv DI , [SI]
 		ADD SI , 2
-	StoreBullets1:
+	StoreBullets1:                          ;Initilize fired bullet coordinates by tank's gun pos
 		MOV AX,[SI]+4
 		CMP AX,0
 		JNZ Occupied1
@@ -969,7 +967,7 @@ Tank1Action proc
 	        MOV                [SI]+2,DX
 	        MOV                [SI]+4,1
                 jmp                Read_Value
-	Occupied1:
+	Occupied1:                                              ;loop thorugh the rest of the bullets
 		ADD SI,8        
 		DEC DI
 		JNZ StoreBullets1
@@ -979,6 +977,9 @@ Tank1Action proc
 Tank1Action ENDP
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Tank2Action proc
+                Mov Tank2_Stuck,dl
+                cmp dl,1
+                jz Read_Value2
 	              MOV                AH,1
 	              INT                16h
 	              CMP                AL,'w'
@@ -1173,7 +1174,7 @@ DrawTank2 proc
 DrawTank2 endp
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DrawObstacles proc
-                pusha
+                pusha                                           ;gets obstacles coordinats form array and draws them by using fiiled rectangles
                 MOV SI, OFFSET Obstacles
                 MOV DI,[SI]
                 ADD SI,2
@@ -1198,9 +1199,9 @@ DrawBullets proc
         Drawbullet1: 
                     MOV AX,[SI]+4
                     CMP AX,0
-                    JZ IncrementBullets1
-                    mov ax,[si+6]
-                    cmp ax,'UP'
+                    JZ IncrementBullets1                ;we check for the direction they were fired from
+                    mov ax,[si+6]                       ;at each game loop we draw the bullet 
+                    cmp ax,'UP'                          
                     jz FiredUp1
                     cmp ax,'DO'
                     jz FiredDown1
@@ -1328,7 +1329,7 @@ add SI,02h
 
 DrawBullets endp;
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------
-MoveBullets proc
+MoveBullets proc                        ;moves bullets at each gameloop according to its orientation
 MOV SI,offset Bullets1
 MOV DI,[SI]
 add si,02h
@@ -1346,10 +1347,10 @@ add si,02h
                     cmp bx,'R'
                     jz moveRight1
                     jmp IncrementMove
-        moveUp1:        
+        moveUp1:                                                
                 mov dx,[si+2]
                 cmp dx,0
-                jz setzero
+                jz setzero                              ;set zero jumps to a clear bullets which detects where the bullet was fired from and if it hit the edges of the screen
                 dec dx
                 mov [si+2],dx
                 jmp IncrementMove
@@ -1377,7 +1378,7 @@ add si,02h
                     JGE setzero
                     MOV [SI],CX
                     jmp IncrementMove
-        setzero:   
+        setzero:                                        
                     MOV [SI]+4,0h
                     clearBullets  
                     
@@ -1448,8 +1449,10 @@ add si,02h
 
 MoveBullets ENDP
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Collision proc 
-MOV  SI, OFFSET Obstacles
+Collision proc    
+
+                                                ;Collision between any 2 game objects we call macro collisionDetection for x and y coordinates for each 2 objs                          
+MOV  SI, OFFSET Obstacles                       ;A collision is Detected when both object calls return true => al determines 1 collision , 0 no
 mov DI,[SI]
 ADD SI,2
 Tank1Obst:      
@@ -1481,7 +1484,7 @@ Tank2Obst:
                  and al,bl
                  jz IncrementObstacles2
                  mov [SI]+8,0
-                 DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,ScreenColour
+                 DrawFilledRectangle [SI],[SI]+2,[SI]+6,[SI]+4,ScreenColour     
                  Call DrawObstacles
 IncrementObstacles2:add si,10D
                  dec DI
@@ -1503,11 +1506,11 @@ Bullets2Tank1:
                  clearBullets
                  MOV AX,Tank1_Health
                  DEC AX
-                 CMP AX,0
-                 JZ ZeroHealthT1
+                 CMP AX,0                       ; check for tank hp
+                 JZ ZeroHealthT1                 ; if zero game end flag indicats tank2 has won and ends game
                  MOV Tank1_Health,AX
                  JMP IncBullets2
-ZeroHealthT1:    MOV GameEndFlag,2
+ZeroHealthT1:    MOV GameEndFlag,2      
                  RET
 
                 
@@ -1548,6 +1551,8 @@ IncBullets1:
 
 
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+                                                        ;We take one bullet and loop it over all obstacles 
+                                                        ;if a collision is detected the obstacle is destroyed and the bullet is cleared
 
                 mov si,offset Bullets1
                 mov di,[si]
@@ -1646,7 +1651,6 @@ IncBullets1:
                 mov nObstacles,cx
                 jnz Bullets2Obst
                 jmp nextBullet2
-
 
 
 
@@ -2097,7 +2101,10 @@ Wait5sec:
         RET
 StartGame ENDP
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CheckGameEnd proc
+CheckGameEnd proc                       ;called at the end of game loop to check game termination
+                                        ; game flag => 1,tank 1 win
+                                                      ;2,tank 2 win
+                                                      ; F3 the game was terminated
         MOV     AL,2
         CMP     AL,GameEndFlag
         JZ      Tank2Wins
@@ -2234,6 +2241,7 @@ MAIN proc FAR
 	         int           16h
 
 	         cmp           al,3bh          	;F1 compare
+                 JZ            ChatModel
 	         cmp           al,3ch          	;F2 compare
                  JZ            PLay
 	         mov           bl,01bh         	;ESC compare
@@ -2244,12 +2252,14 @@ MAIN proc FAR
                 CALL DrawObstacles
 	GameLoop:
                 call delay
-                call ClearBufferValues
-                Call Tank1Action
+                call ClearBufferValues          
+                Call Tank1Action        ;ProcessInput funtion
                 call Tank2Action
-                Call MoveBullets
+                
+                Call MoveBullets        ;update game info
                 call Collision
-                Call DrawHealthBar
+               
+                Call DrawHealthBar  ;Draw functions
                 call DrawBullets
                 Call DrawTank1
                 Call DrawTank2
@@ -2259,7 +2269,10 @@ MAIN proc FAR
                 CMP AL,MainMenuFlag
                 JZ Menu
                 jmp GameLoop 
-EndGame:
+
+        ChatModel:
+                
+        EndGame:
                 MoveCursor 0,0
                 ClearScreen
                 mov AH,4CH
